@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Parc d'Atraccions — Construcció + Física</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  min-height:100vh;background:#0a0a1a;
+  font-family:'Courier New',monospace;color:#fff;padding:12px;
+  background-image:radial-gradient(circle at 20% 20%,#1a0a2e 0%,transparent 50%),
+                   radial-gradient(circle at 80% 80%,#0a1a2e 0%,transparent 50%);
+}
+h1{
+  font-size:17px;font-weight:900;letter-spacing:3px;text-transform:uppercase;
+  text-align:center;margin-bottom:3px;
+  background:linear-gradient(90deg,#FF6B35,#FFD700,#9C27B0);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.subtitle{font-size:10px;color:#555;text-align:center;letter-spacing:2px;margin-bottom:14px;}
+
+/* Mode toggle */
+#mode-toggle{display:flex;gap:6px;justify-content:center;margin-bottom:14px;}
+.mode-btn{
+  padding:8px 18px;border-radius:20px;cursor:pointer;font-size:12px;
+  font-family:'Courier New',monospace;font-weight:bold;letter-spacing:1px;
+  border:2px solid rgba(255,255,255,0.15);background:transparent;color:#555;
+  transition:all .2s;
+}
+.mode-btn.active{background:rgba(255,255,255,0.1);color:#fff;border-color:rgba(255,255,255,0.4);}
+
+/* Selector atraccions */
+#attr-selector{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin-bottom:12px;}
+.attr-btn{
+  padding:7px 11px;border-radius:8px;cursor:pointer;font-size:11px;
+  font-family:'Courier New',monospace;transition:all .2s;
+}
+
+/* Indicadors pas */
+#step-selector{display:flex;gap:6px;justify-content:center;margin-bottom:12px;}
+.step-btn{
+  width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:12px;font-weight:bold;
+  font-family:'Courier New',monospace;display:flex;align-items:center;justify-content:center;transition:all .2s;
+}
+
+/* Card */
+#card{border-radius:12px;overflow:hidden;background:#0d0d20;border:2px solid rgba(150,150,150,0.15);}
+#card-header{padding:10px 14px;display:flex;align-items:center;gap:8px;}
+#step-title-badge{border-radius:6px;padding:3px 10px;font-size:12px;font-weight:bold;color:#000;}
+
+/* ── MODE CONSTRUCCIÓ ── */
+.card-body{display:flex;background:#0d0d1f;}
+.svg-main{flex:1;padding:8px;display:flex;align-items:center;justify-content:center;
+          border-right:1px solid rgba(255,255,255,0.05);}
+.svg-main svg{width:100%;max-width:240px;height:170px;}
+.svg-detail{flex:1;padding:8px;display:flex;align-items:center;justify-content:center;}
+.svg-detail svg{width:100%;max-width:240px;height:170px;}
+@media(max-width:520px){
+  .card-body{flex-direction:column;}
+  .svg-main,.svg-detail{border-right:none;border-bottom:1px solid rgba(255,255,255,0.05);}
+  .svg-main svg,.svg-detail svg{height:140px;}
+}
+
+#formula-box{padding:10px 14px;background:#070710;border-top:1px solid rgba(255,255,255,0.05);}
+.formula-label{font-size:9px;letter-spacing:2px;color:#555;margin-bottom:6px;}
+.formulas-grid{display:flex;flex-wrap:wrap;gap:6px;}
+.formula-pill{
+  display:inline-flex;flex-direction:column;padding:6px 10px;border-radius:8px;
+  border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);
+}
+.formula-name{font-size:8px;color:#888;margin-bottom:2px;letter-spacing:1px;}
+.formula-expr{font-size:13px;font-weight:bold;letter-spacing:1px;}
+
+#step-desc{padding:10px 14px;background:#0a0a18;font-size:12px;line-height:1.6;color:#bbb;}
+#tip-box{padding:7px 14px 10px;background:#0a0a18;border-top:1px solid rgba(255,255,255,0.04);}
+.tip-inner{
+  display:flex;gap:8px;align-items:flex-start;font-size:11px;line-height:1.5;color:#888;
+  padding:6px 8px;border-radius:6px;background:rgba(255,255,255,0.03);border-left:3px solid #444;
+}
+.tip-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+
+/* ── MODE PROBLEMES ── */
+#problemes-container{padding:10px 14px 14px;}
+
+.metodologia{
+  padding:10px 12px;border-radius:8px;margin-bottom:12px;
+  background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);
+}
+.met-title{font-size:9px;letter-spacing:2px;color:#666;margin-bottom:8px;}
+.met-steps{display:flex;gap:6px;flex-wrap:wrap;}
+.met-step{
+  font-size:10px;padding:4px 8px;border-radius:6px;
+  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#aaa;
+}
+.met-step b{color:#FFD700;}
+
+.nivell-toggle{display:flex;gap:6px;margin-bottom:10px;}
+.nvl-btn{
+  padding:5px 14px;border-radius:14px;border:1px solid rgba(255,255,255,0.15);
+  background:transparent;color:#555;cursor:pointer;font-size:11px;
+  font-family:'Courier New',monospace;transition:all .2s;
+}
+.nvl-btn.active{color:#fff;border-color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.08);}
+
+.problema-card{
+  margin-bottom:10px;border-radius:10px;overflow:hidden;
+  border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.02);
+}
+.prob-header{
+  padding:8px 12px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;
+}
+.prob-num{font-size:10px;color:#888;letter-spacing:1px;}
+.prob-enunciat{font-size:12px;color:#ccc;line-height:1.5;padding:0 12px 8px;}
+.prob-dades{
+  margin:0 12px 8px;padding:6px 10px;border-radius:6px;
+  background:rgba(255,255,255,0.04);font-size:11px;color:#aaa;line-height:1.8;
+  border-left:3px solid rgba(255,215,0,0.4);
+}
+.prob-dades b{color:#FFD700;}
+
+.sol-toggle{
+  margin:0 12px 8px;padding:5px 12px;border-radius:6px;border:none;
+  background:rgba(255,255,255,0.06);color:#888;cursor:pointer;font-size:11px;
+  font-family:'Courier New',monospace;transition:all .2s;width:calc(100% - 24px);text-align:left;
+}
+.sol-toggle:hover{background:rgba(255,255,255,0.1);color:#ccc;}
+
+.solucio-box{
+  margin:0 12px 10px;padding:10px 12px;border-radius:8px;
+  background:rgba(76,175,80,0.07);border:1px solid rgba(76,175,80,0.2);
+  display:none;
+}
+.solucio-box.visible{display:block;}
+.sol-step{font-size:11px;color:#aaa;line-height:2;border-bottom:1px solid rgba(255,255,255,0.05);padding:2px 0;}
+.sol-step:last-child{border-bottom:none;}
+.sol-step b{color:#4CAF50;}
+.sol-resultat{
+  margin-top:8px;padding:6px 10px;border-radius:6px;
+  background:rgba(76,175,80,0.15);font-size:13px;font-weight:bold;
+  color:#4CAF50;text-align:center;
+}
+
+/* Nav */
+#nav{display:flex;justify-content:space-between;margin-top:10px;gap:8px;}
+.nav-btn{
+  flex:1;padding:9px;border-radius:8px;background:transparent;
+  font-size:13px;font-family:'Courier New',monospace;font-weight:bold;cursor:pointer;transition:all .2s;
+}
+.nav-btn:disabled{color:#444;border:2px solid #333;cursor:not-allowed;}
+#step-counter{display:flex;align-items:center;padding:0 10px;color:#555;font-size:11px;white-space:nowrap;}
+
+/* Materials */
+#materials{margin-top:12px;padding:10px;border-radius:8px;border:1px solid #222;background:#080812;}
+#materials p{font-size:9px;color:#555;letter-spacing:2px;margin-bottom:5px;}
+#materials-list{display:flex;gap:6px;flex-wrap:wrap;}
+.material-tag{font-size:10px;padding:3px 7px;border-radius:4px;background:#1a1a2e;border:1px solid #333;color:#888;}
+</style>
+</head>
+<body>
+
+<h1>Parc d'Atraccions</h1>
+<p class="subtitle">CONSTRUCCIÓ · FÍSICA PRÀCTICA · 2n ESO</p>
+
+<div id="mode-toggle">
+  <button class="mode-btn active" onclick="setMode('construccio')">🔨 CONSTRUCCIÓ</button>
+  <button class="mode-btn" onclick="setMode('problemes')">📐 PROBLEMES</button>
+</div>
+
+<div id="attr-selector"></div>
+<div id="step-selector"></div>
+
+<div id="card">
+  <div id="card-header"><span id="step-title-badge"></span></div>
+
+  <!-- CONSTRUCCIÓ -->
+  <div id="view-construccio">
+    <div class="card-body">
+      <div class="svg-main" id="svg-main"></div>
+      <div class="svg-detail" id="svg-detail"></div>
+    </div>
+    <div id="formula-box">
+      <div class="formula-label">⚡ FÍSICA D'AQUEST PAS</div>
+      <div class="formulas-grid" id="formulas-grid"></div>
+    </div>
+    <div id="step-desc"></div>
+    <div id="tip-box">
+      <div class="tip-inner"><span class="tip-icon">🔧</span><span id="tip-text"></span></div>
+    </div>
+  </div>
+
+  <!-- PROBLEMES -->
+  <div id="view-problemes" style="display:none;">
+    <div id="problemes-container">
+      <div class="metodologia">
+        <div class="met-title">📋 COM RESOLDRE UN PROBLEMA</div>
+        <div class="met-steps">
+          <div class="met-step"><b>1.</b> Escriu les DADES</div>
+          <div class="met-step"><b>2.</b> Canvis d'UNITATS si cal</div>
+          <div class="met-step"><b>3.</b> Escriu la FÓRMULA</div>
+          <div class="met-step"><b>4.</b> Substitueix i CALCULA</div>
+        </div>
+      </div>
+      <div class="nivell-toggle">
+        <button class="nvl-btn active" onclick="setNivell('normal')">📘 Normal</button>
+        <button class="nvl-btn" onclick="setNivell('adaptat')">🌟 Adaptat (NESE)</button>
+      </div>
+      <div id="problemes-list"></div>
+    </div>
+  </div>
+</div>
+
+<div id="nav">
+  <button class="nav-btn" id="btn-prev" onclick="changeStep(-1)">&larr; ANTERIOR</button>
+  <div id="step-counter"></div>
+  <button class="nav-btn" id="btn-next" onclick="changeStep(1)">SEGÜENT &rarr;</button>
+</div>
+
+<div id="materials">
+  <p>MATERIALS BÀSICS</p>
+  <div id="materials-list">
+    <span class="material-tag">📦 Cartró</span>
+    <span class="material-tag">🥤 Palletes</span>
+    <span class="material-tag">✂️ Tisores</span>
+    <span class="material-tag">🔧 Cúter</span>
+    <span class="material-tag">🔵 Cola</span>
+    <span class="material-tag">📏 Regle</span>
+    <span class="material-tag">🧵 Fil</span>
+    <span class="material-tag">⚖️ Balança</span>
+    <span class="material-tag">⏱ Cronòmetre</span>
+  </div>
+</div>
+
+<script>
+// ─── HELPERS SVG ──────────────────────────────────────────────────────────────
+const G = ()=>`
+  ${Array.from({length:10},(_,i)=>`<line x1="${i*22}" y1="0" x2="${i*22}" y2="130" stroke="rgba(255,255,255,0.025)" stroke-width="0.5"/>`).join('')}
+  ${Array.from({length:7},(_,i)=>`<line x1="0" y1="${i*22}" x2="200" y2="${i*22}" stroke="rgba(255,255,255,0.025)" stroke-width="0.5"/>`).join('')}
+`;
+const label=(x,y,t,c='#aaa',s=8,a='middle')=>`<text x="${x}" y="${y}" text-anchor="${a}" fill="${c}" font-size="${s}" font-family="monospace">${t}</text>`;
+const arrow=(id,c)=>`<defs><marker id="${id}" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="${c}"/></marker></defs>`;
+const fold=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="rgba(255,165,0,0.6)" stroke-width="1.5" stroke-dasharray="5,3"/>`;
+const glue=(x,y)=>`<text x="${x}" y="${y}" font-size="11">🔵</text>`;
+
+// ─── DADES ────────────────────────────────────────────────────────────────────
+const attractions = [
+// ════════════════════════════════════════════════════════════════════════════
+{
+  id:'muntanya', nom:'🎢 Muntanya Russa', color:'#FF6B35', colorLight:'rgba(255,107,53,0.13)',
+  passos:[
+    {
+      titol:'1. Base i suports',
+      desc:'Talla una base de cartró (30×8 cm). Fes 4 triangles iguals per als suports verticals. Enganxa\'ls cada 7 cm sobre la base.',
+      tip:'Reforça la base per sota amb una tira extra. Com més estable és la base, millor funciona la pista.',
+      formules:[
+        {nom:'VARIABLE CLAU',expr:'h = alçada (m)',col:'#FF6B35'},
+        {nom:'ENERGIA POT.',expr:'Ep = m·g·h',col:'#FFD700'},
+        {nom:'g (Terra)',expr:'9,8 m/s²',col:'#FF9800'},
+      ],
+      svgMain:`<svg viewBox="0 0 200 130">${G()}${arrow('a1','#FF6B35')}
+        <rect x="10" y="108" width="180" height="7" rx="2" fill="#8B5E3C" stroke="#FF6B35" stroke-width="1.5"/>
+        <polygon points="28,108 42,108 35,72" fill="rgba(255,107,53,0.2)" stroke="#FF6B35" stroke-width="1.5"/>
+        <polygon points="68,108 82,108 75,72" fill="rgba(255,107,53,0.2)" stroke="#FF6B35" stroke-width="1.5"/>
+        <polygon points="108,108 122,108 115,72" fill="rgba(255,107,53,0.2)" stroke="#FF6B35" stroke-width="1.5"/>
+        <polygon points="148,108 162,108 155,72" fill="rgba(255,107,53,0.2)" stroke="#FF6B35" stroke-width="1.5"/>
+        ${label(100,128,'BASE 30 cm','#FF6B35',8)}
+        <line x1="10" y1="120" x2="190" y2="120" stroke="rgba(255,107,53,0.4)" stroke-width="1"/>
+        <line x1="10" y1="117" x2="10" y2="123" stroke="rgba(255,107,53,0.4)" stroke-width="1"/>
+        <line x1="190" y1="117" x2="190" y2="123" stroke="rgba(255,107,53,0.4)" stroke-width="1"/>
+        ${label(6,55,'TRIANGLE','#FFB085',7,'start')}${label(6,65,'CARTRÓ','#FFB085',7,'start')}
+        <line x1="55" y1="90" x2="20" y2="58" stroke="rgba(255,107,53,0.4)" stroke-width="0.8" stroke-dasharray="3,2"/>
+      </svg>`,
+      svgDetail:`<svg viewBox="0 0 200 130">${G()}${arrow('a1d','#FF6B35')}
+        ${label(100,14,'COM FER EL TRIANGLE','#FF6B35',8)}
+        <rect x="18" y="22" width="62" height="52" fill="rgba(139,94,60,0.2)" stroke="#8B5E3C" stroke-width="1.5" stroke-dasharray="4,2"/>
+        ${fold(18,74,80,74)}${fold(18,22,80,74)}
+        <text x="82" y="68" font-size="13">✂</text>
+        ${label(49,86,'cartró pla','#888',7)}
+        <line x1="108" y1="65" x2="128" y2="65" stroke="#FF6B35" stroke-width="1.5" marker-end="url(#a1d)"/>
+        <polygon points="150,22 190,74 110,74" fill="rgba(255,107,53,0.25)" stroke="#FF6B35" stroke-width="2"/>
+        <line x1="150" y1="22" x2="150" y2="74" stroke="rgba(255,215,0,0.5)" stroke-width="1" stroke-dasharray="3,2"/>
+        ${label(158,52,'h suport','rgba(255,215,0,0.8)',7,'start')}
+        ${label(150,88,'RESULTAT','#FF6B35',8)}
+        ${glue(85,105)}${label(104,110,'cola aquí','#888',7,'start')}
+      </svg>`
+    },
+    {
+      titol:'2. Les vies (rails)',
+      desc:'Fixa dues palletes paral·leles als suports, separades 3 cm. Corba-les lleugerament als canvis de pendent. El vagó lliscarà per l\'interior.',
+      tip:'Per corbar la palleta sense trencar-la: humiteja-la lleugerament o escalfa-la entre els dits fent moviments suaus.',
+      formules:[
+        {nom:'FRICCIÓ',expr:'f = μ · N',col:'#FF6B35'},
+        {nom:'μ (coef. frec.)',expr:'0,0 – 1,0',col:'#FF9800'},
+        {nom:'INVESTIGACIÓ',expr:'Quin material llisca més?',col:'#FFD700'},
+      ],
+      svgMain:`<svg viewBox="0 0 200 130">${G()}${arrow('a2','#FFD700')}
+        <rect x="10" y="108" width="180" height="5" rx="2" fill="#8B5E3C" stroke="#FF6B35" stroke-width="1"/>
+        <rect x="25" y="90" width="4" height="18" rx="1" fill="rgba(255,107,53,0.3)" stroke="#FF6B35" stroke-width="1"/>
+        <rect x="60" y="75" width="4" height="33" rx="1" fill="rgba(255,107,53,0.3)" stroke="#FF6B35" stroke-width="1"/>
+        <rect x="100" y="80" width="4" height="28" rx="1" fill="rgba(255,107,53,0.3)" stroke="#FF6B35" stroke-width="1"/>
+        <rect x="140" y="72" width="4" height="36" rx="1" fill="rgba(255,107,53,0.3)" stroke="#FF6B35" stroke-width="1"/>
+        <rect x="170" y="88" width="4" height="20" rx="1" fill="rgba(255,107,53,0.3)" stroke="#FF6B35" stroke-width="1"/>
+        <path d="M 15 50 Q 60 20 100 45 Q 140 72 185 30" fill="none" stroke="#FFD700" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M 15 57 Q 60 27 100 52 Q 140 79 185 37" fill="none" stroke="#FFD700" stroke-width="2.5" stroke-linecap="round"/>
+        <rect x="88" y="36" width="18" height="11" rx="3" fill="#FF6B35" stroke="#fff" stroke-width="1.5"/>
+        <circle cx="92" cy="49" r="3" fill="#222" stroke="#FFD700" stroke-width="1"/>
+        <circle cx="102" cy="49" r="3" fill="#222" stroke="#FFD700" stroke-width="1"/>
+        <line x1="15" y1="50" x2="15" y2="57" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+        ${label(7,60,'3cm','rgba(255,255,255,0.6)',7,'start')}
+        ${label(138,15,'PUNT ALT → Ep màx','#FFD700',7)}
+      </svg>`,
+      svgDetail:`<svg viewBox="0 0 200 130">${G()}
+        ${label(100,14,'SEPARACIÓ ENTRE RAILS','#FFD700',8)}
+        <line x1="60" y1="38" x2="60" y2="90" stroke="#FFD700" stroke-width="3" stroke-linecap="round"/>
+        <line x1="80" y1="38" x2="80" y2="90" stroke="#FFD700" stroke-width="3" stroke-linecap="round"/>
+        <line x1="58" y1="64" x2="82" y2="64" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+        <line x1="58" y1="61" x2="58" y2="67" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+        <line x1="82" y1="61" x2="82" y2="67" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+        ${label(70,57,'3 cm','#fff',9)}
+        <rect x="59" y="42" width="22" height="12" rx="3" fill="rgba(255,107,53,0.4)" stroke="#FF6B35" stroke-width="1.5"/>
+        <circle cx="64" cy="56" r="3" fill="#222" stroke="#FFD700" stroke-width="1.5"/>
+        <circle cx="76" cy="56" r="3" fill="#222" stroke="#FFD700" stroke-width="1.5"/>
+        ${label(70,108,'VISTA FRONTAL','#888',8)}
+        ${label(148,28,'PROVAR AMB:','#FF6B35',8)}
+        ${label(148,42,'palleta nua','#aaa',8)}
+        ${label(148,56,'+ paper alumini','#aaa',8)}
+        ${label(148,70,'+ celo','#aaa',8)}
+        ${label(148,86,'menor μ =','#FFD700',8)}
+        ${label(148,98,'més ràpid!','#FFD700',8)}
+      </svg>`
+    },
+    {
+      titol:'3. El vagó',
+      desc:'Fes una caixa de cartró (4×3×2 cm). Talla rodetes de palleta gruixuda com a rodes. Una palleta prima fa d\'eix. Ha de rodar lliurement pels rails.',
+      tip:'Truc per a les rodes: talla palletes gruixudes en cilindres de 5 mm d\'amplada. Una palleta prima com a eix, encaixada per dins de la palleta gruixuda, permet que la roda giri.',
+      formules:[
+        {nom:'MASSA vagó',expr:'Pesa\'l! (kg)',col:'#FF6B35'},
+        {nom:'EC = ½mv²',expr:'v = d/t',col:'#FFD700'},
+        {nom:'MESURA',expr:'massa en kg, v en m/s',col:'#FF9800'},
+      ],
+      svgMain:`<svg viewBox="0 0 200 130">${G()}
+        <polygon points="55,38 115,38 115,78 55,78" fill="rgba(255,107,53,0.13)" stroke="#FF6B35" stroke-width="2"/>
+        <polygon points="55,38 80,18 140,18 115,38" fill="rgba(255,107,53,0.2)" stroke="#FF6B35" stroke-width="2"/>
+        <polygon points="115,38 140,18 140,58 115,78" fill="rgba(255,107,53,0.27)" stroke="#FF6B35" stroke-width="2"/>
+        <circle cx="68" cy="82" r="9" fill="#1a1a1a" stroke="#FFD700" stroke-width="2.5"/>
+        <circle cx="102" cy="82" r="9" fill="#1a1a1a" stroke="#FFD700" stroke-width="2.5"/>
+        <circle cx="68" cy="82" r="3.5" fill="#FFD700"/>
+        <circle cx="102" cy="82" r="3.5" fill="#FFD700"/>
+        <line x1="59" y1="82" x2="111" y2="82" stroke="rgba(255,215,0,0.5)" stroke-width="1.5" stroke-dasharray="4,2"/>
+        ${label(85,110,'EIX DE PALLETA','#FFD700',8)}
+        <line x1="55" y1="95" x2="115" y2="95" stroke="rgba(255,107,53,0.4)" stroke-width="1"/>
+        ${label(85,104,'aprox. 5 cm','#FFB085',8)}
+      </svg>`,
+      svgDetail:`<svg viewBox="0 0 200 130">${G()}
+        ${label(100,13,'DETALL DE LES RODES','#FFD700',8)}
+        <line x1="40" y1="65" x2="160" y2="65" stroke="rgba(255,215,0,0.5)" stroke-width="1.5" stroke-dasharray="4,2"/>
+        ${label(100,58,'PALLETA PRIMA (eix)','rgba(255,215,0,0.7)',7)}
+        <circle cx="55" cy="65" r="14" fill="rgba(30,30,30,0.9)" stroke="#FFD700" stroke-width="2.5"/>
+        <circle cx="55" cy="65" r="5" fill="#FFD700" opacity="0.8"/>
+        <circle cx="145" cy="65" r="14" fill="rgba(30,30,30,0.9)" stroke="#FFD700" stroke-width="2.5"/>
+        <circle cx="145" cy="65" r="5" fill="#FFD700" opacity="0.8"/>
+        ${label(55,91,'PALLETA GRUIXUDA','#aaa',7)}${label(55,100,'(talla 5 mm)','#aaa',7)}
+        <rect x="72" y="44" width="56" height="25" rx="3" fill="rgba(255,107,53,0.25)" stroke="#FF6B35" stroke-width="1.5"/>
+        ${label(100,61,'CAIXA VAGÓ','#FF6B35',8)}
+        ${label(100,110,'SECCIÓ TRANSVERSAL','#555',7)}
+      </svg>`
+    },
+    {
+      titol:'4. Muntatge final + mesures',
+      desc:'Col·loca les vies sobre els suports. Mesura h (alçada del punt de sortida). Pesa el vagó. Mesura la velocitat al final. Calcula i compara Ep i Ec!',
+      tip:'Per mesurar v: marca 10 cm al final de la pista i mesura el temps que tarda el vagó a recórrer-los. v = 0,10 m ÷ t (en segons).',
+      formules:[
+        {nom:'ENERGIA POT.',expr:'Ep = m · g · h',col:'#FF6B35'},
+        {nom:'ENERGIA CIN.',expr:'Ec = ½ · m · v²',col:'#FFD700'},
+        {nom:'VELOCITAT',expr:'v = d / t',col:'#FF9800'},
+        {nom:'EFICIÈNCIA',expr:'η = Ec/Ep · 100%',col:'#4CAF50'},
+      ],
+      svgMain:`<svg viewBox="0 0 200 130">${G()}${arrow('a4','#FF6B35')}
+        <rect x="8" y="110" width="184" height="5" rx="2" fill="#8B5E3C" stroke="#FF6B35" stroke-width="1.5"/>
+        <rect x="18" y="60" width="5" height="50" rx="1" fill="rgba(255,107,53,0.2)" stroke="#FF6B35" stroke-width="1"/>
+        <rect x="48" y="30" width="5" height="80" rx="1" fill="rgba(255,107,53,0.2)" stroke="#FF6B35" stroke-width="1"/>
+        <rect x="83" y="45" width="5" height="65" rx="1" fill="rgba(255,107,53,0.2)" stroke="#FF6B35" stroke-width="1"/>
+        <rect x="123" y="35" width="5" height="75" rx="1" fill="rgba(255,107,53,0.2)" stroke="#FF6B35" stroke-width="1"/>
+        <rect x="158" y="55" width="5" height="55" rx="1" fill="rgba(255,107,53,0.2)" stroke="#FF6B35" stroke-width="1"/>
+        <path d="M 12 62 Q 48 32 83 47 Q 118 65 158 57 Q 175 55 185 67" fill="none" stroke="#FFD700" stroke-width="2.5"/>
+        <path d="M 12 69 Q 48 39 83 54 Q 118 72 158 64 Q 175 62 185 74" fill="none" stroke="#FFD700" stroke-width="2.5"/>
+        <rect x="73" y="39" width="17" height="10" rx="2" fill="#FF6B35" stroke="#fff" stroke-width="1.5"/>
+        <path d="M 80 33 Q 120 18 150 28" fill="none" stroke="rgba(255,107,53,0.6)" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#a4)"/>
+        <line x1="192" y1="62" x2="192" y2="110" stroke="rgba(255,215,0,0.7)" stroke-width="2"/>
+        <line x1="188" y1="62" x2="196" y2="62" stroke="rgba(255,215,0,0.7)" stroke-width="2"/>
+        <line x1="188" y1="110" x2="196" y2="110" stroke="rgba(255,215,0,0.7)" stroke-width="2"/>
+        ${label(197,89,'h','#FFD700',14,'start')}
+        ${label(22,22,'Ep=mgh','#FF6B35',8)}
+        ${label(162,88,'Ec=½mv²','#4CAF50',8)}
+      </svg>`,
+      svgDetail:`<svg viewBox="0 0 200 130">${G()}
+        ${label(100,13,'PROTOCOL DE MESURA','#4CAF50',8)}
+        <rect x="10" y="20" width="180" height="104" rx="6" fill="rgba(76,175,80,0.07)" stroke="rgba(76,175,80,0.3)" stroke-width="1"/>
+        ${label(100,36,'1. PESA el vagó → m (kg)','#aaa',8)}
+        ${label(100,50,'2. MESURA h en metres','#aaa',8)}
+        ${label(100,64,'3. CALCULA Ep = m · 9,8 · h','#FFD700',8)}
+        ${label(100,78,'4. CRONOMETRA 10 cm finals','#aaa',8)}
+        ${label(100,92,'5. CALCULA v = 0,10 / t','#aaa',8)}
+        ${label(100,106,'6. CALCULA Ec = ½ · m · v²','#FFD700',8)}
+        ${label(100,120,'7. COMPARA Ep vs Ec  →  η','#4CAF50',8)}
+      </svg>`
+    }
+  ],
+  problemes:[
+    {
+      nivell:'normal',
+      num:'Problema 1',
+      color:'#FF6B35',
+      enunciat:'El vagó de la teva muntanya russa té una massa de 0,05 kg i surt des d\'una alçada de h = 0,12 m. Calcula l\'energia potencial gravitatòria al punt de sortida.',
+      dades:'m = 0,05 kg\nh = 0,12 m\ng = 9,8 m/s²',
+      passos:[
+        {label:'Fórmula:', val:'Ep = m · g · h'},
+        {label:'Substitució:', val:'Ep = 0,05 · 9,8 · 0,12'},
+        {label:'Resultat:', val:'Ep = 0,0588 J ≈ 0,06 J'},
+      ],
+      resultat:'Ep ≈ 0,06 J'
+    },
+    {
+      nivell:'normal',
+      num:'Problema 2',
+      color:'#FFD700',
+      enunciat:'El vagó arriba al final de la pista i recorre 10 cm en 0,25 s. Calcula la velocitat i l\'energia cinètica. Compara-la amb l\'Ep del problema 1. Per què no coincideixen?',
+      dades:'d = 0,10 m\nt = 0,25 s\nm = 0,05 kg',
+      passos:[
+        {label:'Velocitat:', val:'v = d/t = 0,10 / 0,25 = 0,4 m/s'},
+        {label:'Fórmula Ec:', val:'Ec = ½ · m · v²'},
+        {label:'Substitució:', val:'Ec = ½ · 0,05 · 0,4² = ½ · 0,05 · 0,16'},
+        {label:'Resultat:', val:'Ec = 0,004 J'},
+        {label:'Diferència:', val:'Ep - Ec = 0,056 J → energia perduda per fricció'},
+      ],
+      resultat:'Ec = 0,004 J  (la fricció dissipa l\'energia!)'
+    },
+    {
+      nivell:'normal',
+      num:'Problema 3 — Conservació',
+      color:'#4CAF50',
+      enunciat:'Un patinador de 50 kg vol baixar per una rampa de 6 m d\'alçada. Al final necessita anar com a mínim a 3 m/s per fer una acrobàcia. Serà prou alta la rampa? (Imagina que no hi ha fricció.)',
+      dades:'m = 50 kg\nh = 6 m\ng = 9,8 m/s²\nv_mín = 3 m/s',
+      passos:[
+        {label:'Ep inicial:', val:'Ep = 50 · 9,8 · 6 = 2940 J'},
+        {label:'Si Ep → Ec:', val:'2940 = ½ · 50 · v²'},
+        {label:'Aïllem v:', val:'v² = 2940 / 25 = 117,6  →  v = 10,84 m/s'},
+        {label:'Comparem:', val:'10,84 m/s > 3 m/s → SÍ, la rampa és prou alta!'},
+      ],
+      resultat:'v = 10,84 m/s → la rampa SÍ és suficient'
+    },
+    {
+      nivell:'normal',
+      num:'Problema 4 — Taula comparativa Ec',
+      color:'#9C27B0',
+      enunciat:'Calcula l\'energia cinètica d\'un cos en els tres casos. Observa com canvia Ec quan doblem la massa o la velocitat. Quin factor influeix més?',
+      dades:'A: m = 10 kg, v = 5 m/s\nB: m = 20 kg, v = 5 m/s\nC: m = 10 kg, v = 10 m/s',
+      passos:[
+        {label:'Fórmula:', val:'Ec = ½ · m · v²'},
+        {label:'Cas A:', val:'½ · 10 · 5² = 5 · 25 = 125 J'},
+        {label:'Cas B:', val:'½ · 20 · 5² = 10 · 25 = 250 J  (doble massa → doble Ec)'},
+        {label:'Cas C:', val:'½ · 10 · 10² = 5 · 100 = 500 J  (doble v → 4× més Ec!)'},
+      ],
+      resultat:'A = 125 J | B = 250 J | C = 500 J → la velocitat té molt més impacte que la massa!'
+    },
+    {
+      nivell:'normal',
+      num:'Problema 5 — Elefant al 3r pis (conservació)',
+      color:'#00BCD4',
+      enunciat:'Un elefant de 200 kg és al 3r pis (10 m d\'alçada). Quina Ep té? Si cau, a quina velocitat arribarà a terra?',
+      dades:'m = 200 kg\nh = 10 m\ng = 9,8 m/s²',
+      passos:[
+        {label:'Ep:', val:'Ep = 200 · 9,8 · 10 = 19.600 J'},
+        {label:'Conservació:', val:'Ep = Ec  →  19.600 = ½ · 200 · v²'},
+        {label:'v²:', val:'19.600 / 100 = 196'},
+        {label:'v:', val:'√196 = 14 m/s'},
+      ],
+      resultat:'Ep = 19.600 J → v = 14 m/s en arribar a terra'
+    },
+    {
+      nivell:'adaptat',
+      num:'Problema A — Energia potencial',
+      color:'#FF6B35',
+      enunciat:'El vagó pesa 50 g i surt des d\'una alçada de 12 cm. Calcula l\'energia potencial. Recorda: Ep = m · g · h',
+      dades:'m = 50 g = 0,05 kg  (50 g ÷ 1000)\nh = 12 cm = 0,12 m  (12 cm ÷ 100)\ng = 9,8 m/s²',
+      passos:[
+        {label:'Fórmula:', val:'Ep = m · g · h'},
+        {label:'Substitució:', val:'Ep = 0,05 · 9,8 · 0,12'},
+        {label:'Resultat:', val:'Ep = 0,06 J (joules)'},
+      ],
+      resultat:'Ep = 0,06 J'
+    },
+    {
+      nivell:'adaptat',
+      num:'Problema B — Energia cinètica bàsica',
+      color:'#FFD700',
+      enunciat:'Un cos de 4 kg es mou a 3 m/s. Calcula la seva energia cinètica: Ec = ½ · m · v²',
+      dades:'m = 4 kg\nv = 3 m/s',
+      passos:[
+        {label:'v²:', val:'3 · 3 = 9'},
+        {label:'½ · m:', val:'½ · 4 = 2'},
+        {label:'Ec:', val:'2 · 9 = 18 J'},
+      ],
+      resultat:'Ec = 18 J'
+    },
+    {
+      nivell:'adaptat',
+      num:'Problema C — Energia cinètica del vagó',
+      color:'#FF9800',
+      enunciat:'El vagó arriba al final a una velocitat de 0,4 m/s. Calcula l\'energia cinètica. Recorda: Ec = ½ · m · v²',
+      dades:'m = 0,05 kg\nv = 0,4 m/s',
+      passos:[
+        {label:'Fórmula:', val:'Ec = ½ · m · v²'},
+        {label:'½ · m:', val:'½ · 0,05 = 0,025'},
+        {label:'v²:', val:'0,4 · 0,4 = 0,16'},
+        {label:'Resultat:', val:'Ec = 0,025 · 0,16 = 0,004 J'},
+      ],
+      resultat:'Ec = 0,004 J'
+    },
+  ]
+},
+// ════════════════════════════════════════════════════════════════════════════
+{
+  id:'barques', nom:'🚢 Barques (Pèndol)', color:'#00BCD4', colorLight:'rgba(0,188,212,0.13)',
+  passos:[
+    {
+      titol:'1. Arc de suport',
+      desc:'Fes dues potes verticals de palleta (20-25 cm) i una barra horitzontal que les uneixi. Fixa-les a una base de cartró ampla. L\'estructura ha de ser absolutament vertical.',
+      tip:'Comprova la verticalitat deixant caure un fil amb pes (plomada). Si el fil és paral·lel a les potes, estan ben verticals.',
+      formules:[
+        {nom:'PÈNDOL SIMPLE',expr:'fil + massa puntual',col:'#00BCD4'},
+        {nom:'VARIABLE CLAU',expr:'L = longitud del fil',col:'#80DEEA'},
+        {nom:'UNITATS',expr:'L en metres (m)',col:'#FFD700'},
+      ],
+      svgMain:`<svg viewBox="0 0 200 130">${G()}
+        <rect x="25" y="107" width="150" height="9" rx="3" fill="#1a5f7a" stroke="#00BCD4" stroke-width="1.5"/>
+        <rect x="45" y="28" width="7" height="80" rx="2" fill="rgba(0,188,212,0.2)" stroke="#00BCD4" stroke-width="2"/>
+        <rect x="148" y="28" width="7" height="80" rx="2" fill="rgba(0,188,212,0.2)" stroke="#00BCD4" stroke-width="2"/>
+        <rect x="42" y="24" width="116" height="8" rx="3" fill="rgba(0,188,212,0.27)" stroke="#00BCD4" stroke-width="2"/>
+        ${label(100,20,'BARRA HORITZONTAL','#00BCD4',8)}
+        <line x1="52" y1="80" x2="52" y2="97" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
+        <ellipse cx="52" cy="101" rx="5" ry="5" fill="rgba(255,215,0,0.3)" stroke="#FFD700" stroke-width="1.5"/>
+        ${label(68,101,'plomada','rgba(255,215,0,0.7)',7,'start')}
+        ${label(100,122,'BASE CARTRÓ (ampla!)','#00BCD4',8)}
+      </svg>`,
+      svgDetail:`<svg viewBox="0 0 200 130">${G()}
+        ${label(100,13,'UNIÓ POTA - BARRA','#00BCD4',8)}
+        <rect x="92" y="20" width="8" height="58" rx="2" fill="rgba(0,188,212,0.3)" stroke="#00BCD4" stroke-width="2"/>
+        <rect x="75" y="20" width="42" height="8" rx="2" fill="rgba(0,188,212,0.4)" stroke="#00BCD4" stroke-width="2"/>
+        <ellipse cx="96" cy="21" rx="8" ry="4" fill="rgba(0,188,212,0.5)" stroke="#00BCD4" stroke-width="1.5"/>
+        ${glue(106,32)}${label(124,38,'cola termofusible','#888',7,'start')}
+        ${label(100,95,'Opció: tall encaixat','#888',8)}
+        <line x1="60" y1="104" x2="140" y2="104" stroke="rgba(0,188,212,0.2)" stroke-width="1"/>
+        ${label(100,118,'(més resistent)','#555',7)}
+      </svg>`
+    },
+    {
+      titol:'2. La barca',
+      desc:'Doblega un rectangle de cartró (12×5 cm) en forma de U. Reforça els laterals. Fes un forat als dos extrems superiors per passar-hi el fil.',
+      tip:'Perquè la barca quedi simètrica: doblega el cartró per la meitat i retalla els dos laterals alhora. Ambdós costats seran idèntics.',
+      formules:[
+        {nom:'MASSA BARCA',expr:'Pesa-la! (kg)',col:'#00BCD4'},
+        {nom:'PES',expr:'F = m · g',col:'#FFD700'},
+        {nom:'SORPRESA!',expr:'m NO afecta el període T',col:'#4CAF50'},
+      ],
+      svgMain:`<svg viewBox="0 0 200 130">${G()}
+        <path d="M 45 52 L 45 92 Q 100 108 155 92 L 155 52 Z" fill="rgba(0,188,212,0.12)" stroke="#00BCD4" stroke-width="2"/>
+        <path d="M 45 52 Q 100 40 155 52" fill="rgba(0,188,212,0.2)" stroke="#00BCD4" stroke-width="2"/>
+        <rect x="55" y="66" width="22" height="3" rx="1" fill="#00BCD4"/>
+        <rect x="55" y="66" width="3" height="16" rx="1" fill="#00BCD4"/>
+        <rect x="88" y="66" width="22" height="3" rx="1" fill="#00BCD4"/>
+        <rect x="120" y="66" width="22" height="3" rx="1" fill="#00BCD4"/>
+        <circle cx="53" cy="48" r="4" fill="none" stroke="#FFD700" stroke-width="2"/>
+        <circle cx="147" cy="48" r="4" fill="none" stroke="#FFD700" stroke-width="2"/>
+        ${label(40,40,'FORAT','#FFD700',8)}${label(140,40,'FORAT','#FFD700',8)}
+        <line x1="45" y1="120" x2="155" y2="120" stroke="rgba(0,188,212,0.4)" stroke-width="1"/>
+        ${label(100,128,'12 cm','#80DEEA',8)}
+      </svg>`,
+      svgDetail:`<svg viewBox="0 0 200 130">${G()}
+        ${label(100,13,'DOBLEGAT EN U','#00BCD4',8)}
+        <rect x="30" y="25" width="80" height="50" fill="rgba(0,188,212,0.1)" stroke="#00BCD4" stroke-width="1.5" stroke-dasharray="4,2"/>
+        ${fold(30,75,110,75)}
+        <text x="112" y="70" font-size="13">✂</text>
+        ${label(70,90,'cartró pla','#888',7)}
+        <path d="M 50 50 L 50 90 Q 70 100 90 90 L 90 50" fill="rgba(0,188,212,0.2)" stroke="#00BCD4" stroke-width="2"/>
+        ${label(70,95,'RESULTAT','#888',7)}
+        <line x1="140" y1="40" x2="140" y2="90" stroke="#00BCD4" stroke-width="2"/>
+        <line x1="160" y1="40" x2="160" y2="90" stroke="#00BCD4" stroke-width="2"/>
+        ${label(150,35,'5 cm','#80DEEA',8)}
+        <line x1="138" y1="35" x2="162" y2="35" stroke="rgba(0,188,212,0.4)" stroke-width="1"/>
+      </svg>`
+    },
+    {
+      titol:'3. El fil — longitud L',
+      desc:'Lliga dos fils iguals als forats i enganxa\'ls a la barra superior. La longitud L és la variable clau per calcular el període T.',
+      tip:'Mesura L des del punt de subjecció a la barra fins al centre de la barca (no fins al fons). Prova amb tres longituds diferents i compara els períodes.',
+      formules:[
+        {nom:'PERÍODE',expr:'T = 2π · √(L/g)',col:'#00BCD4'},
+        {nom:'g = 9,8 m/s²',expr:'π ≈ 3,1416',col:'#80DEEA'},
+        {nom:'MESURA L',expr:'en metres (m)',col:'#FFD700'},
+      ],
+      svgMain:`<svg viewBox="0 0 200 130">${G()}
+        <rect x="40" y="20" width="120" height="7" rx="3" fill="rgba(0,188,212,0.27)" stroke="#00BCD4" stroke-width="2"/>
+        <line x1="70" y1="27" x2="70" y2="78" stroke="#FFD700" stroke-width="2" stroke-dasharray="4,2"/>
+        <line x1="130" y1="27" x2="130" y2="78" stroke="#FFD700" stroke-width="2" stroke-dasharray="4,2"/>
+        <path d="M 55 78 L 55 103 Q 100 113 145 103 L 145 78 Z" fill="rgba(0,188,212,0.13)" stroke="#00BCD4" stroke-width="2"/>
+        <path d="M 55 78 Q 100 68 145 78" fill="rgba(0,188,212,0.2)" stroke="#00BCD4" stroke-width="2"/>
+        <line x1="155" y1="27" x2="155" y2="78" stroke="rgba(255,107,53,0.7)" stroke-width="2"/>
+        <line x1="150" y1="27" x2="160" y2="27" stroke="rgba(255,107,53,0.7)" stroke-width="2"/>
+        <line x1="150" y1="78" x2="160" y2="78" stroke="rgba(255,107,53,0.7)" stroke-width="2"/>
+        ${label(172,56,'L','#FF6B35',16)}
+        ${label(5,56,'MESURA','#80DEEA',8,'start')}${label(5,66,'AQUÍ!','#80DEEA',8,'start')}
+        ${label(100,122,'T = 2π · √(L/g)','#FFD700',10)}
+      </svg>`,
+      svgDetail:`<svg viewBox="0 0 200 130">${G()}
+        ${label(100,13,'TAULA DE PREDICCIONS','#00BCD4',8)}
+        <rect x="10" y="20" width="180" height="100" rx="5" fill="rgba(0,188,212,0.05)" stroke="rgba(0,188,212,0.25)" stroke-width="1"/>
+        ${label(50,36,'L (m)','#80DEEA',8)}${label(105,36,'T teòrica','#80DEEA',8)}${label(165,36,'T real','#80DEEA',8)}
+        <line x1="12" y1="40" x2="188" y2="40" stroke="rgba(0,188,212,0.2)" stroke-width="1"/>
+        ${label(50,56,'0,10 m','#aaa',8)}${label(105,56,'0,63 s','#FFD700',8)}${label(165,56,'_____','#555',8)}
+        ${label(50,72,'0,20 m','#aaa',8)}${label(105,72,'0,90 s','#FFD700',8)}${label(165,72,'_____','#555',8)}
+        ${label(50,88,'0,30 m','#aaa',8)}${label(105,88,'1,10 s','#FFD700',8)}${label(165,88,'_____','#555',8)}
+        ${label(100,110,'Comprova les teves mesures!','#4CAF50',8)}
+      </svg>`
+    },
+    {
+      titol:'4. Oscil·lació i mesura',
+      desc:'Empeny la barca uns 15°. Mesura el temps de 10 oscil·lacions i divideix per 10. Compara la T real amb la T calculada amb la fórmula.',
+      tip:'Per mesurar bé: inicia el cronòmetre quan la barca passa pel punt més baix (posició central), no quan la sueltes. Això redueix l\'error.',
+      formules:[
+        {nom:'PERÍODE T',expr:'T = temps / 10',col:'#00BCD4'},
+        {nom:'Ep màxima',expr:'Ep = m · g · h',col:'#FFD700'},
+        {nom:'CONSERVACIÓ',expr:'Ep (dalt) = Ec (baix)',col:'#4CAF50'},
+      ],
+      svgMain:`<svg viewBox="0 0 200 130">${G()}
+        <rect x="40" y="15" width="120" height="6" rx="3" fill="rgba(0,188,212,0.27)" stroke="#00BCD4" stroke-width="2"/>
+        <path d="M 62 62 Q 100 55 138 62" fill="none" stroke="rgba(0,188,212,0.2)" stroke-width="1" stroke-dasharray="3,2"/>
+        <line x1="70" y1="21" x2="62" y2="62" stroke="rgba(0,188,212,0.3)" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <line x1="130" y1="21" x2="138" y2="62" stroke="rgba(0,188,212,0.3)" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <line x1="70" y1="21" x2="70" y2="72" stroke="#FFD700" stroke-width="2"/>
+        <line x1="130" y1="21" x2="130" y2="72" stroke="#FFD700" stroke-width="2"/>
+        <path d="M 55 72 L 55 97 Q 100 107 145 97 L 145 72 Z" fill="rgba(0,188,212,0.13)" stroke="#00BCD4" stroke-width="2"/>
+        <path d="M 55 72 Q 100 62 145 72" fill="rgba(0,188,212,0.2)" stroke="#00BCD4" stroke-width="2"/>
+        <path d="M 100 21 Q 115 30 108 46" fill="none" stroke="#FF6B35" stroke-width="1.5"/>
+        ${label(118,38,'θ≈15°','#FF6B35',9)}
+        <circle cx="170" cy="52" r="18" fill="#1a1a2e" stroke="#00BCD4" stroke-width="2"/>
+        ${label(170,49,'⏱','#00BCD4',12)}${label(170,62,'x10','#80DEEA',8)}
+        ${label(100,120,'10 oscil·lacions ÷ 10 = T','#80DEEA',8)}
+      </svg>`,
+      svgDetail:`<svg viewBox="0 0 200 130">${G()}
+        ${label(100,13,'CONSERVACIÓ ENERGIA','#4CAF50',8)}
+        <rect x="10" y="22" width="180" height="100" rx="5" fill="rgba(76,175,80,0.05)" stroke="rgba(76,175,80,0.25)" stroke-width="1"/>
+        ${label(100,38,'PUNT ALT (lateral)','#aaa',8)}
+        ${label(100,50,'→ velocitat = 0','#888',8)}
+        ${label(100,62,'→ Ep = m · g · h  (màxima)','#FFD700',8)}
+        <line x1="40" y1="72" x2="160" y2="72" stroke="rgba(76,175,80,0.3)" stroke-width="1"/>
+        ${label(100,84,'PUNT BAIX (centre)','#aaa',8)}
+        ${label(100,96,'→ h = 0  →  Ep = 0','#888',8)}
+        ${label(100,108,'→ Ec = ½mv²  (màxima)','#FFD700',8)}
+        ${label(100,120,'Ep_alt = Ec_baix','#4CAF50',9)}
+      </svg>`
+    }
+  ],
+  problemes:[
+    {
+      nivell:'normal',
+      num:'Problema 1 — Període',
+      color:'#00BCD4',
+      enunciat:'La teva barca penja d\'un fil de L = 0,20 m. Calcula el període teòric T. Després mesura el període real amb el cronòmetre. Coincideix?',
+      dades:'L = 0,20 m\ng = 9,8 m/s²\nπ = 3,1416',
+      passos:[
+        {label:'Fórmula:', val:'T = 2π · √(L/g)'},
+        {label:'L/g:', val:'0,20 / 9,8 = 0,0204'},
+        {label:'√(L/g):', val:'√0,0204 = 0,1428'},
+        {label:'T =', val:'2 · 3,1416 · 0,1428 = 0,897 s ≈ 0,90 s'},
+      ],
+      resultat:'T ≈ 0,90 s (quasi 1 segon per oscil·lació!)'
+    },
+    {
+      nivell:'normal',
+      num:'Problema 2 — Conservació',
+      color:'#4CAF50',
+      enunciat:'Eleveixes la barca 3 cm respecte al punt més baix. La barca pesa 200 g. Quina Ep té? En passar pel punt més baix, a quina velocitat va?',
+      dades:'h = 3 cm = 0,03 m\nm = 200 g = 0,2 kg\ng = 9,8 m/s²',
+      passos:[
+        {label:'Ep:', val:'Ep = m · g · h = 0,2 · 9,8 · 0,03 = 0,059 J'},
+        {label:'Conservació:', val:'Ep = Ec  →  0,059 = ½ · 0,2 · v²'},
+        {label:'v²:', val:'0,059 / 0,1 = 0,59'},
+        {label:'v:', val:'√0,59 = 0,77 m/s'},
+      ],
+      resultat:'v ≈ 0,77 m/s al punt més baix'
+    },
+    {
+      nivell:'normal',
+      num:'Problema 3 — La massa importa?',
+      color:'#FFD700',
+      enunciat:'Llences una pilota de 0,5 kg cap amunt amb una velocitat de 2 m/s. Calcula l\'Ec. En quina energia es converteix? A quina alçada arriba?',
+      dades:'m = 0,5 kg\nv = 2 m/s\ng = 9,8 m/s²',
+      passos:[
+        {label:'Ec inicial:', val:'Ec = ½ · 0,5 · 2² = ½ · 0,5 · 4 = 1 J'},
+        {label:'Conservació:', val:'Ec → Ep  →  1 = m · g · h'},
+        {label:'h:', val:'h = 1 / (0,5 · 9,8) = 1 / 4,9 = 0,20 m'},
+      ],
+      resultat:'La pilota arriba a h = 0,20 m (20 cm)'
+    },
+    {
+      nivell:'normal',
+      num:'Problema 4 — Mosca vs globus',
+      color:'#9C27B0',
+      enunciat:'Qui té una energia cinètica més petita: una mosca de 12 mg que vola a 3 m/s, o un globus aerostàtic de 500 kg que vola a 0,5 m/s?',
+      dades:'Mosca: m = 12 mg = 0,000012 kg, v = 3 m/s\nGlobus: m = 500 kg, v = 0,5 m/s',
+      passos:[
+        {label:'Ec mosca:', val:'½ · 0,000012 · 3² = 0,000006 · 9 = 0,000054 J'},
+        {label:'Ec globus:', val:'½ · 500 · 0,5² = 250 · 0,25 = 62,5 J'},
+        {label:'Comparem:', val:'0,000054 J  <<  62,5 J'},
+      ],
+      resultat:'La mosca té molta menys Ec — la massa del globus és determinant!'
+    },
+    {
+      nivell:'normal',
+      num:'Problema 5 — Saltador d\'altura (Ep)',
+      color:'#FF6B35',
+      enunciat:'Un saltador d\'altura de 85 kg s\'eleva fins a 2,20 m. Quina energia potencial ha adquirit?',
+      dades:'m = 85 kg\nh = 2,20 m\ng = 9,8 m/s²',
+      passos:[
+        {label:'Fórmula:', val:'Ep = m · g · h'},
+        {label:'Substitució:', val:'Ep = 85 · 9,8 · 2,20'},
+        {label:'Càlcul:', val:'85 · 9,8 = 833  →  833 · 2,20 = 1.832,6 J'},
+      ],
+      resultat:'Ep = 1.832,6 J — una energia considerable!'
+    },
+    {
+      nivell:'adaptat',
+      num:'Problema A — El període',
+      color:'#00BCD4',
+      enunciat:'La barca penja d\'un fil de 20 cm. El professor et diu que T = 2π · √(L/g). Amb L = 0,20 m i g = 9,8, calcula T seguint els passos.',
+      dades:'L = 0,20 m\ng = 9,8 m/s²\n2π ≈ 6,28',
+      passos:[
+        {label:'Pas 1 — L/g:', val:'0,20 ÷ 9,8 = 0,0204'},
+        {label:'Pas 2 — arrel:', val:'√0,0204 = 0,143  (amb calculadora)'},
+        {label:'Pas 3 — T:', val:'6,28 · 0,143 = 0,90 s'},
+      ],
+      resultat:'T = 0,90 s ≈ 1 segon'
+    },
+    {
+      nivell:'adaptat',
+      num:'Problema B — Energia cinètica bàsica',
+      color:'#FFD700',
+      enunciat:'Un cos de 4 kg va a una velocitat de 3 m/s. Calcula la seva energia cinètica: Ec = ½ · m · v²',
+      dades:'m = 4 kg\nv = 3 m/s',
+      passos:[
+        {label:'v²:', val:'3 · 3 = 9'},
+        {label:'½ · m:', val:'½ · 4 = 2'},
+        {label:'Ec:', val:'2 · 9 = 18 J'},
+      ],
+      resultat:'Ec = 18 J'
+    },
+    {
+      nivell:'adaptat',
+      num:'Problema C — Energia de la barca',
+      color:'#4CAF50',
+      enunciat:'La barca puja 3 cm quan oscil·la. Si pesa 200 g, quina energia potencial guanya?',
+      dades:'h = 3 cm = 0,03 m  (divideix entre 100)\nm = 200 g = 0,2 kg  (divideix entre 1000)\ng = 9,8 m/s²',
+      passos:[
+        {label:'Fórmula:', val:'Ep = m · g · h'},
+        {label:'Substitució:', val:'Ep = 0,2 · 9,8 · 0,03'},
+        {label:'Resultat:', val:'Ep = 0,059 J'},
+      ],
+      resultat:'Ep = 0,059 J (joules)'
+    },
+  ]
+},
+// ════════════════════════════════════════════════════════════════════════════
+{
+  id:'noria', nom:'🎡 Noria', color:'#9C27B0', colorLight:'rgba(156,39,176,0.13)',
+  passos:[
+    {
+      titol:'1. Les dues rodes',
+      desc:'Talla dos cercles idèntics de cartró. Fes un forat exacte al centre de cada un. Radi recomanat: 8 cm.',
+      tip:'Per fer un cercle perfecte: clava una xinxeta al centre, lliga un fil de 8 cm i un llapis a l\'altre extrem. Dibuixa tot el voltant.',
+      formules:[
+        {nom:'RADI r',expr:'Mesura\'l! (m)',col:'#9C27B0'},
+        {nom:'ALÇADA màx.',expr:'h = 2·r (diàmetre)',col:'#CE93D8'},
+        {nom:'Ep (cabina)',expr:'Ep = m · g · 2r',col:'#FFD700'},
+      ],
+      svgMain:`<svg viewBox="0 0 200 130">${G()}
+        <circle cx="62" cy="65" r="45" fill="rgba(156,39,176,0.13)" stroke="#9C27B0" stroke-width="2.5"/>
+        <circle cx="62" cy="65" r="4" fill="none" stroke="#FFD700" stroke-width="2"/>
+        <circle cx="62" cy="65" r="1.5" fill="#FFD700"/>
+        <circle cx="148" cy="65" r="45" fill="rgba(156,39,176,0.13)" stroke="#9C27B0" stroke-width="2.5"/>
+        <circle cx="148" cy="65" r="4" fill="none" stroke="#FFD700" stroke-width="2"/>
+        <circle cx="148" cy="65" r="1.5" fill="#FFD700"/>
+        <line x1="62" y1="65" x2="107" y2="65" stroke="rgba(156,39,176,0.4)" stroke-width="1.5"/>
+        ${label(84,78,'r = 8 cm','#CE93D8',8)}
+        ${label(62,120,'FORAT CENTRAL','#FFD700',8)}${label(148,120,'IDÈNTIC','#FFD700',8)}
+      </svg>`,
+      svgDetail:`<svg viewBox="0 0 200 130">${G()}
+        ${label(100,13,'COM FER EL CERCLE','#9C27B0',8)}
+        <circle cx="80" cy="70" r="45" fill="rgba(156,39,176,0.1)" stroke="#9C27B0" stroke-width="1.5" stroke-dasharray="4,2"/>
+        <circle cx="80" cy="70" r="2" fill="#FFD700"/>
+        <line x1="80" y1="70" x2="125" y2="70" stroke="rgba(255,215,0,0.6)" stroke-width="1.5"/>
+        ${label(100,62,'r = 8 cm','rgba(255,215,0,0.8)',7)}
+        <text x="82" y="74" font-size="10">📌</text>
+        ${label(80,125,'xinxeta al centre','#888',7)}
+        ${label(160,50,'COMPÀS','#9C27B0',8)}${label(160,62,'de cartró','#888',7)}
+        <line x1="148" y1="66" x2="170" y2="52" stroke="rgba(156,39,176,0.4)" stroke-width="0.8" stroke-dasharray="2,2"/>
+      </svg>`
+    },
+    {
+      titol:'2. Radis de palleta',
+      desc:'Enganxa 8 palletes com a radis entre les dues rodes, separades 45°. Mantenen la distància i la rigidesa de l\'estructura.',
+      tip:'Per marcar els 45°: dibuixa primer els 4 eixos (0°, 90°, 180°, 270°), després els 4 intermedis (45°, 135°, 225°, 315°). Usa un transportador.',
+      formules:[
+        {nom:'ANGLE entre radis',expr:'360° ÷ 8 = 45°',col:'#9C27B0'},
+        {nom:'LONGITUD radi',expr:'igual al radi r',col:'#CE93D8'},
+        {nom:'RIGIDESA',expr:'2 rodes + 8 radis',col:'#FFD700'},
+      ],
+      svgMain:`<svg viewBox="0 0 200 130">${G()}
+        ${[0,45,90,135,180,225,270,315].map((deg,i)=>{const r=deg*Math.PI/180;const x2=100+Math.cos(r)*50,y2=65+Math.sin(r)*50;return `<line x1="100" y1="65" x2="${x2}" y2="${y2}" stroke="${i%2===0?'#9C27B0':'#CE93D8'}" stroke-width="2"/>`;}).join('')}
+        <circle cx="100" cy="65" r="50" fill="none" stroke="#9C27B0" stroke-width="2.5"/>
+        <circle cx="100" cy="65" r="5" fill="#FFD700"/>
+        ${label(100,125,'8 PALLETES — 8 RADIS (45°)','#CE93D8',9)}
+      </svg>`,
+      svgDetail:`<svg viewBox="0 0 200 130">${G()}
+        ${label(100,13,'MARCATGE DELS 45°','#9C27B0',8)}
+        <circle cx="100" cy="68" r="45" fill="none" stroke="rgba(156,39,176,0.3)" stroke-width="1" stroke-dasharray="3,2"/>
+        <line x1="100" y1="23" x2="100" y2="113" stroke="rgba(255,215,0,0.4)" stroke-width="1"/>
+        <line x1="55" y1="68" x2="145" y2="68" stroke="rgba(255,215,0,0.4)" stroke-width="1"/>
+        ${label(118,30,'0°','#FFD700',8)}
+        ${label(148,50,'45°','#CE93D8',8)}
+        ${label(148,90,'135°','#CE93D8',8)}
+        ${label(118,115,'180°','#FFD700',8)}
+        ${label(58,30,'315°','#CE93D8',8)}
+        <text x="84" y="65" font-size="9" fill="#9C27B0">⊕</text>
+        ${label(100,125,'transportador de 45 en 45','#888',7)}
+      </svg>`
+    },
+    {
+      titol:'3. Les cabines',
+      desc:'8 caixes petites de cartró penjades amb fil de cada radi. Han d\'oscil·lar lliurement per mantenir-se horitzontals mentre la noria gira.',
+      tip:'Perquè les cabines no s\'enganxin entre elles: calcula que la llargada del fil + la cabina no superin la distància entre dos radis consecutius.',
+      formules:[
+        {nom:'Ep (cabina)',expr:'Ep = m · g · h',col:'#9C27B0'},
+        {nom:'h màxima',expr:'h = 2·r (punt alt)',col:'#CE93D8'},
+        {nom:'h mínima',expr:'h = 0 (punt baix)',col:'#FFD700'},
+      ],
+      svgMain:`<svg viewBox="0 0 200 130">${G()}
+        <circle cx="100" cy="65" r="45" fill="none" stroke="#9C27B0" stroke-width="2"/>
+        ${[0,45,90,135,180,225,270,315].map((deg,i)=>{const r=deg*Math.PI/180;const x2=100+Math.cos(r)*45,y2=65+Math.sin(r)*45;const colors=['#FF6B35','#00BCD4','#FFD700','#4CAF50','#FF6B35','#00BCD4','#FFD700','#4CAF50'];return `<line x1="100" y1="65" x2="${x2}" y2="${y2}" stroke="rgba(156,39,176,0.5)" stroke-width="1.5"/><line x1="${x2}" y1="${y2}" x2="${x2}" y2="${y2+8}" stroke="rgba(255,255,255,0.3)" stroke-width="1"/><rect x="${x2-5}" y="${y2+8}" width="10" height="8" rx="1.5" fill="rgba(100,100,200,0.3)" stroke="${colors[i]}" stroke-width="1.5"/>`;}).join('')}
+        <circle cx="100" cy="65" r="4" fill="#FFD700"/>
+        ${label(100,122,'CABINES LLIURES — GRAVETAT','#CE93D8',9)}
+      </svg>`,
+      svgDetail:`<svg viewBox="0 0 200 130">${G()}
+        ${label(100,13,'PUNT ALT vs PUNT BAIX','#9C27B0',8)}
+        <circle cx="100" cy="65" r="40" fill="none" stroke="rgba(156,39,176,0.3)" stroke-width="1" stroke-dasharray="3,2"/>
+        <circle cx="100" cy="25" r="6" fill="rgba(156,39,176,0.3)" stroke="#9C27B0" stroke-width="2"/>
+        ${label(100,20,'h = 2r','#9C27B0',8)}${label(100,15,'Ep màx','#CE93D8',7)}
+        <circle cx="100" cy="105" r="6" fill="rgba(255,215,0,0.3)" stroke="#FFD700" stroke-width="2"/>
+        ${label(100,117,'h = 0  →  Ep = 0','#FFD700',8)}
+        <line x1="100" y1="25" x2="100" y2="105" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="3,2"/>
+        <line x1="110" y1="25" x2="130" y2="25" stroke="rgba(156,39,176,0.4)" stroke-width="1"/>
+        <line x1="110" y1="105" x2="130" y2="105" stroke="rgba(255,215,0,0.4)" stroke-width="1"/>
+        <line x1="128" y1="25" x2="128" y2="105" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+        ${label(137,68,'2r','rgba(255,255,255,0.4)',9)}
+      </svg>`
+    },
+    {
+      titol:'4. Suport en A i eix',
+      desc:'Dos triangles de cartró als laterals aguanten l\'eix. La palleta travessa el centre de les dues rodes i ha de girar lliurement.',
+      tip:'L\'eix ha de poder girar: fes el forat central una mica més gran que la palleta, o posa-hi un segon tub de palleta com a coixinet.',
+      formules:[
+        {nom:'Ep → Ec',expr:'Conservació energia',col:'#9C27B0'},
+        {nom:'TREBALL',expr:'W = F · d',col:'#CE93D8'},
+        {nom:'MOMENT',expr:'M = F · r',col:'#FFD700'},
+      ],
+      svgMain:`<svg viewBox="0 0 200 130">${G()}
+        <rect x="20" y="115" width="160" height="5" rx="2" fill="#5a1a7a" stroke="#9C27B0" stroke-width="1.5"/>
+        <polygon points="35,115 60,115 47,40" fill="rgba(156,39,176,0.13)" stroke="#9C27B0" stroke-width="2"/>
+        <line x1="40" y1="90" x2="54" y2="90" stroke="#9C27B0" stroke-width="1.5"/>
+        <polygon points="140,115 165,115 152,40" fill="rgba(156,39,176,0.13)" stroke="#9C27B0" stroke-width="2"/>
+        <line x1="145" y1="90" x2="159" y2="90" stroke="#9C27B0" stroke-width="1.5"/>
+        <line x1="30" y1="40" x2="170" y2="40" stroke="#FFD700" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="100" cy="70" r="35" fill="rgba(156,39,176,0.07)" stroke="#9C27B0" stroke-width="2"/>
+        ${[0,60,120,180,240,300].map(deg=>{const r=deg*Math.PI/180;return `<line x1="100" y1="70" x2="${100+Math.cos(r)*35}" y2="${70+Math.sin(r)*35}" stroke="rgba(156,39,176,0.4)" stroke-width="1.5"/>`;}).join('')}
+        <circle cx="100" cy="70" r="4" fill="#FFD700"/>
+        ${label(100,125,'EIX PALLETA GIRA LLIURE','#FFD700',9)}
+      </svg>`,
+      svgDetail:`<svg viewBox="0 0 200 130">${G()}
+        ${label(100,13,'DETALL DE L\'EIX','#9C27B0',8)}
+        <rect x="30" y="60" width="140" height="10" rx="3" fill="rgba(156,39,176,0.13)" stroke="#9C27B0" stroke-width="1.5"/>
+        <circle cx="60" cy="65" r="18" fill="rgba(156,39,176,0.2)" stroke="#9C27B0" stroke-width="2"/>
+        <circle cx="60" cy="65" r="5" fill="none" stroke="#FFD700" stroke-width="2"/>
+        <circle cx="140" cy="65" r="18" fill="rgba(156,39,176,0.2)" stroke="#9C27B0" stroke-width="2"/>
+        <circle cx="140" cy="65" r="5" fill="none" stroke="#FFD700" stroke-width="2"/>
+        <line x1="30" y1="65" x2="170" y2="65" stroke="#FFD700" stroke-width="2.5" stroke-linecap="round"/>
+        ${label(100,95,'forat una mica + gran','#888',7)}
+        ${label(100,107,'que la palleta','#888',7)}
+        ${label(100,119,'→ gira sense fricció','#CE93D8',8)}
+      </svg>`
+    }
+  ],
+  problemes:[
+    {
+      nivell:'normal',
+      num:'Problema 1 — Ep cabina al punt alt',
+      color:'#9C27B0',
+      enunciat:'Una cabina de la noria pesa 50 g. El radi de la noria és de 8 cm. Calcula l\'energia potencial de la cabina quan es troba al punt més alt (h = 2·r = 16 cm).',
+      dades:'m = 50 g = 0,05 kg\nh = 16 cm = 0,16 m\ng = 9,8 m/s²',
+      passos:[
+        {label:'Fórmula:', val:'Ep = m · g · h'},
+        {label:'Substitució:', val:'Ep = 0,05 · 9,8 · 0,16'},
+        {label:'Resultat:', val:'Ep = 0,0784 J ≈ 0,08 J'},
+      ],
+      resultat:'Ep ≈ 0,08 J al punt més alt'
+    },
+    {
+      nivell:'normal',
+      num:'Problema 2 — Conservació en caure',
+      color:'#CE93D8',
+      enunciat:'Si la cabina del problema 1 cau (simulació!), tota la Ep es converteix en Ec quan arriba al punt més baix. A quina velocitat teòrica hi arribarà?',
+      dades:'Ep = 0,0784 J\nm = 0,05 kg',
+      passos:[
+        {label:'Conservació:', val:'Ep = Ec  →  0,0784 = ½ · 0,05 · v²'},
+        {label:'v²:', val:'0,0784 / 0,025 = 3,136'},
+        {label:'v:', val:'√3,136 = 1,77 m/s'},
+      ],
+      resultat:'v ≈ 1,77 m/s (si no hi hagués fricció)'
+    },
+    {
+      nivell:'normal',
+      num:'Problema 3 — Un elefant i un ocell',
+      color:'#FFD700',
+      enunciat:'Qui té més energia potencial: un elefant de 200 kg a 2 m d\'alçada, o un ocell de 100 g a 100 m d\'alçada?',
+      dades:'Elefant: m=200 kg, h=2 m\nOcell: m=100 g=0,1 kg, h=100 m\ng=9,8 m/s²',
+      passos:[
+        {label:'Ep elefant:', val:'200 · 9,8 · 2 = 3.920 J'},
+        {label:'Ep ocell:', val:'0,1 · 9,8 · 100 = 98 J'},
+        {label:'Conclusió:', val:'L\'elefant té molta més Ep (3.920 J vs 98 J)'},
+      ],
+      resultat:'L\'elefant té més Ep: 3.920 J > 98 J'
+    },
+    {
+      nivell:'normal',
+      num:'Problema 4 — Torre Eiffel',
+      color:'#FF6B35',
+      enunciat:'La Torre Eiffel té tres pisos: 58 m, 116 m i 276 m. Calcula l\'energia potencial que guanya un noi de 70 kg en passar per cada pis.',
+      dades:'m = 70 kg\ng = 9,8 m/s²\nPis 1: h = 58 m | Pis 2: h = 116 m | Pis 3: h = 276 m',
+      passos:[
+        {label:'Pis 1:', val:'Ep = 70 · 9,8 · 58 = 39.788 J'},
+        {label:'Pis 2:', val:'Ep = 70 · 9,8 · 116 = 79.576 J'},
+        {label:'Pis 3:', val:'Ep = 70 · 9,8 · 276 = 189.336 J'},
+        {label:'Observació:', val:'L\'Ep creix proporcionalment amb l\'alçada!'},
+      ],
+      resultat:'Pis 1: 39.788 J | Pis 2: 79.576 J | Pis 3: 189.336 J'
+    },
+    {
+      nivell:'normal',
+      num:'Problema 5 — Gravetat a la Lluna',
+      color:'#CE93D8',
+      enunciat:'Una cabina de 50 g és al punt més alt de la noria (h = 16 cm). Calcula la seva Ep a la Terra (g=9,8) i a la Lluna (g=1,62). Són iguals?',
+      dades:'m = 0,05 kg\nh = 0,16 m\ng Terra = 9,8 m/s²\ng Lluna = 1,62 m/s²',
+      passos:[
+        {label:'Ep Terra:', val:'0,05 · 9,8 · 0,16 = 0,0784 J'},
+        {label:'Ep Lluna:', val:'0,05 · 1,62 · 0,16 = 0,013 J'},
+        {label:'Conclusió:', val:'A la Lluna la g és 6× menor → Ep és 6× menor!'},
+      ],
+      resultat:'Ep Terra = 0,078 J | Ep Lluna = 0,013 J — no són iguals!'
+    },
+    {
+      nivell:'adaptat',
+      num:'Problema A — Cabina al punt alt',
+      color:'#9C27B0',
+      enunciat:'La cabina pesa 50 g i és al punt més alt de la noria (16 cm d\'alçada). Calcula l\'energia potencial.',
+      dades:'m = 50 g = 0,05 kg  (÷1000)\nh = 16 cm = 0,16 m  (÷100)\ng = 9,8 m/s²',
+      passos:[
+        {label:'Fórmula:', val:'Ep = m · g · h'},
+        {label:'Substitució:', val:'Ep = 0,05 · 9,8 · 0,16'},
+        {label:'Resultat:', val:'Ep = 0,08 J'},
+      ],
+      resultat:'Ep = 0,08 J'
+    },
+    {
+      nivell:'adaptat',
+      num:'Problema B — Saltador d\'altura',
+      color:'#FFD700',
+      enunciat:'Un saltador de 85 kg salta fins a 2,20 m. Quina energia potencial ha adquirit? Ep = m · g · h',
+      dades:'m = 85 kg\nh = 2,20 m\ng = 9,8 m/s²',
+      passos:[
+        {label:'Fórmula:', val:'Ep = m · g · h'},
+        {label:'Substitució:', val:'Ep = 85 · 9,8 · 2,20'},
+        {label:'Càlcul pas a pas:', val:'85 · 9,8 = 833  →  833 · 2,20 = 1.832,6 J'},
+      ],
+      resultat:'Ep = 1.832,6 J'
+    },
+    {
+      nivell:'adaptat',
+      num:'Problema C — Qui té més Ep?',
+      color:'#CE93D8',
+      enunciat:'Qui té més energia potencial: un noi de 70 kg a terra, o el mateix noi a 1 m d\'alçada (sobre una taula)?',
+      dades:'m = 70 kg\nCas A: h = 0 m  (a terra)\nCas B: h = 1 m  (sobre la taula)\ng = 9,8 m/s²',
+      passos:[
+        {label:'Ep a terra:', val:'Ep = 70 · 9,8 · 0 = 0 J'},
+        {label:'Ep a la taula:', val:'Ep = 70 · 9,8 · 1 = 686 J'},
+        {label:'Conclusió:', val:'Sobre la taula té molta més Ep!'},
+      ],
+      resultat:'Ep taula = 686 J  (a terra = 0 J)'
+    },
+  ]
+},
+// ════════════════════════════════════════════════════════════════════════════
+{
+  id:'balanci', nom:'⚖️ Balancí', color:'#4CAF50', colorLight:'rgba(76,175,80,0.13)',
+  passos:[
+    {
+      titol:'1. La barra principal',
+      desc:'Tira de cartró de 30 cm reforçada per dins amb 2 palletes enganxades en paral·lel. Ha de quedar molt rígida.',
+      tip:'Marca cada centímetre des del centre amb un retolador fi. Aquests punts serviran per situar les masses i mesurar les distàncies d₁ i d₂.',
+      formules:[
+        {nom:'PALANCA',expr:'F₁ · d₁ = F₂ · d₂',col:'#4CAF50'},
+        {nom:'MESURA d',expr:'en metres (m)',col:'#81C784'},
+        {nom:'FORÇA F',expr:'F = m · g  (N)',col:'#FFD700'},
+      ],
+      svgMain:`<svg viewBox="0 0 200 130">${G()}
+        <rect x="20" y="58" width="160" height="14" rx="3" fill="rgba(76,175,80,0.13)" stroke="#4CAF50" stroke-width="2"/>
+        <rect x="22" y="61" width="156" height="4" rx="2" fill="rgba(76,175,80,0.33)" stroke="#81C784" stroke-width="1"/>
+        <rect x="22" y="67" width="156" height="4" rx="2" fill="rgba(76,175,80,0.33)" stroke="#81C784" stroke-width="1"/>
+        <line x1="20" y1="85" x2="180" y2="85" stroke="rgba(76,175,80,0.4)" stroke-width="1"/>
+        <line x1="20" y1="82" x2="20" y2="88" stroke="rgba(76,175,80,0.4)" stroke-width="1"/>
+        <line x1="180" y1="82" x2="180" y2="88" stroke="rgba(76,175,80,0.4)" stroke-width="1"/>
+        ${label(100,96,'30 cm','#81C784',9)}
+        ${label(100,50,'2 PALLETES REFORÇ A DINS','#4CAF50',8)}
+        <circle cx="100" cy="65" r="3" fill="none" stroke="#FFD700" stroke-width="2"/>
+        ${label(100,40,'FORAT PIVOT (CENTRE)','#FFD700',8)}
+      </svg>`,
+      svgDetail:`<svg viewBox="0 0 200 130">${G()}
+        ${label(100,13,'MARQUES CADA CM','#4CAF50',8)}
+        <rect x="20" y="60" width="160" height="10" rx="2" fill="rgba(76,175,80,0.13)" stroke="#4CAF50" stroke-width="1.5"/>
+        ${Array.from({length:15},(_,i)=>{const x=20+i*11;const big=(i===0||i===7||i===14);return `<line x1="${x}" y1="58" x2="${x}" y2="${big?50:55}" stroke="${big?'#FFD700':'#4CAF50'}" stroke-width="${big?2:1}"/>`;}).join('')}
+        ${label(20,46,'0','#FFD700',7)}${label(97,46,'centre','#FFD700',7)}${label(174,46,'30','#FFD700',7)}
+        ${label(100,90,'d₁ (esquerra)','rgba(255,107,53,0.8)',8)}
+        ${label(100,102,'d₂ (dreta)','rgba(0,188,212,0.8)',8)}
+        ${label(100,118,'MESURA EN cm → PASSA A m','#888',7)}
+      </svg>`
+    },
+    {
+      titol:'2. El pivot (fulcre)',
+      desc:'Triangle de cartró amb un forat a la punta. La palleta travessa la barra i el pivot. Ha de girar fàcilment.',
+      tip:'Si el pivot és massa dur: amplia lleugerament el forat de la barra amb un llapis. La barra ha de poder bascullar amb un sol dit.',
+      formules:[
+        {nom:'FULCRE',expr:'punt de suport',col:'#4CAF50'},
+        {nom:'PALANCA 1r grau',expr:'fulcre entre forces',col:'#81C784'},
+        {nom:'EQUILIBRI',expr:'si F₁·d₁ = F₂·d₂',col:'#FFD700'},
+      ],
+      svgMain:`<svg viewBox="0 0 200 130">${G()}
+        <rect x="60" y="110" width="80" height="6" rx="2" fill="#1a4a1a" stroke="#4CAF50" stroke-width="1.5"/>
+        <polygon points="100,40 70,110 130,110" fill="rgba(76,175,80,0.13)" stroke="#4CAF50" stroke-width="2.5"/>
+        <circle cx="100" cy="40" r="4" fill="none" stroke="#FFD700" stroke-width="2.5"/>
+        <circle cx="100" cy="40" r="1.5" fill="#FFD700"/>
+        <line x1="75" y1="40" x2="125" y2="40" stroke="#FFD700" stroke-width="3" stroke-linecap="round"/>
+        <rect x="50" y="36" width="100" height="8" rx="2" fill="rgba(76,175,80,0.2)" stroke="#4CAF50" stroke-width="1.5"/>
+        ${label(35,75,'↕','#81C784',22)}${label(155,75,'↕','#81C784',22)}
+        ${label(100,126,'F₁·d₁ = F₂·d₂','#FFD700',10)}
+      </svg>`,
+      svgDetail:`<svg viewBox="0 0 200 130">${G()}
+        ${label(100,13,'TIPUS DE PALANCA','#4CAF50',8)}
+        <line x1="20" y1="60" x2="180" y2="60" stroke="#4CAF50" stroke-width="2"/>
+        <polygon points="100,60 90,80 110,80" fill="rgba(76,175,80,0.3)" stroke="#4CAF50" stroke-width="1.5"/>
+        <circle cx="50" cy="55" r="10" fill="rgba(255,107,53,0.3)" stroke="#FF6B35" stroke-width="2"/>
+        ${label(50,58,'F₁','#FF6B35',9)}
+        <circle cx="150" cy="55" r="10" fill="rgba(0,188,212,0.3)" stroke="#00BCD4" stroke-width="2"/>
+        ${label(150,58,'F₂','#00BCD4',9)}
+        <line x1="50" y1="60" x2="100" y2="60" stroke="rgba(255,107,53,0.5)" stroke-width="1.5"/>
+        ${label(75,54,'d₁','#FF6B35',8)}
+        <line x1="100" y1="60" x2="150" y2="60" stroke="rgba(0,188,212,0.5)" stroke-width="1.5"/>
+        ${label(125,54,'d₂','#00BCD4',8)}
+        ${label(100,100,'PALANCA 1r GRAU','#888',8)}
+        ${label(100,112,'(tisores, balancí, alicates)','#555',7)}
+      </svg>`
+    },
+    {
+      titol:'3. Marcatge i masses',
+      desc:'Marca cada centímetre des del centre. Col·loca masses (monedes, plastilina) en qualsevol punt per experimentar l\'equilibri.',
+      tip:'Pesa les masses amb una balança de precisió. Les monedes de 1 € pesen exactament 7,5 g. Pots usar-les com a unitat de massa!',
+      formules:[
+        {nom:'CONDICIÓ EQUILIB.',expr:'F₁·d₁ = F₂·d₂',col:'#4CAF50'},
+        {nom:'FORÇA = PES',expr:'F = m · 9,8',col:'#81C784'},
+        {nom:'SI m₁=m₂',expr:'llavors d₁ = d₂',col:'#FFD700'},
+      ],
+      svgMain:`<svg viewBox="0 0 200 130">${G()}
+        <rect x="15" y="60" width="170" height="10" rx="3" fill="rgba(76,175,80,0.13)" stroke="#4CAF50" stroke-width="2"/>
+        ${Array.from({length:15},(_,i)=>{const x=100+(i-7)*11;const big=(i%7===0);return `<line x1="${x}" y1="58" x2="${x}" y2="${big?51:55}" stroke="${big?'#FFD700':'#4CAF50'}" stroke-width="${big?2:1}"/>`;}).join('')}
+        <circle cx="56" cy="65" r="9" fill="rgba(255,107,53,0.27)" stroke="#FF6B35" stroke-width="2"/>
+        ${label(56,68,'m₁','#FF6B35',8)}
+        <circle cx="134" cy="65" r="13" fill="rgba(0,188,212,0.27)" stroke="#00BCD4" stroke-width="2"/>
+        ${label(134,68,'m₂','#00BCD4',8)}
+        <polygon points="100,72 88,95 112,95" fill="rgba(76,175,80,0.2)" stroke="#4CAF50" stroke-width="1.5"/>
+        ${label(100,115,'MESURA d₁ i d₂ des del PIVOT','#81C784',8)}
+      </svg>`,
+      svgDetail:`<svg viewBox="0 0 200 130">${G()}
+        ${label(100,13,'TAULA D\'EXPERIMENTS','#4CAF50',8)}
+        <rect x="10" y="20" width="180" height="102" rx="5" fill="rgba(76,175,80,0.05)" stroke="rgba(76,175,80,0.25)" stroke-width="1"/>
+        ${label(45,35,'m₁ (g)','#FF6B35',8)}${label(85,35,'d₁','#FF6B35',8)}${label(120,35,'m₂ (g)','#00BCD4',8)}${label(160,35,'d₂=?','#00BCD4',8)}
+        <line x1="12" y1="40" x2="188" y2="40" stroke="rgba(76,175,80,0.2)" stroke-width="1"/>
+        ${label(45,56,'10 g','#aaa',8)}${label(85,56,'10 cm','#aaa',8)}${label(120,56,'20 g','#aaa',8)}${label(160,56,'?','#FFD700',8)}
+        ${label(45,72,'20 g','#aaa',8)}${label(85,72,'5 cm','#aaa',8)}${label(120,72,'10 g','#aaa',8)}${label(160,72,'?','#FFD700',8)}
+        ${label(45,88,'7,5 g','#aaa',8)}${label(85,88,'8 cm','#aaa',8)}${label(120,88,'15 g','#aaa',8)}${label(160,88,'?','#FFD700',8)}
+        ${label(100,110,'→ calcula i comprova!','#4CAF50',8)}
+      </svg>`
+    },
+    {
+      titol:'4. Experiment d\'equilibri',
+      desc:'Canvia masses i distàncies. Anota quan s\'equilibra per verificar experimentalment que F₁·d₁ = F₂·d₂.',
+      tip:'Prova el cas "trampa": m₁ = m₂ però d₁ ≠ d₂. Per què no s\'equilibra? Ara prova m₁ gran i prop vs m₂ petit i lluny. Quan s\'equilibra?',
+      formules:[
+        {nom:'EQUILIBRI',expr:'F₁·d₁ = F₂·d₂',col:'#4CAF50'},
+        {nom:'F = m · g',expr:'(pes en N)',col:'#81C784'},
+        {nom:'TREBALL',expr:'W = F · d (J)',col:'#FFD700'},
+      ],
+      svgMain:`<svg viewBox="0 0 200 130">${G()}
+        <rect x="15" y="58" width="170" height="10" rx="3" fill="rgba(76,175,80,0.2)" stroke="#4CAF50" stroke-width="2.5"/>
+        <polygon points="100,68 85,100 115,100" fill="rgba(76,175,80,0.27)" stroke="#4CAF50" stroke-width="2"/>
+        <rect x="75" y="100" width="50" height="6" rx="2" fill="#1a4a1a" stroke="#4CAF50" stroke-width="1.5"/>
+        <circle cx="130" cy="63" r="11" fill="rgba(0,188,212,0.27)" stroke="#00BCD4" stroke-width="2"/>
+        ${label(130,67,'2m','#00BCD4',8)}
+        <circle cx="55" cy="63" r="7" fill="rgba(255,107,53,0.27)" stroke="#FF6B35" stroke-width="2"/>
+        ${label(55,67,'m','#FF6B35',7)}
+        <line x1="55" y1="48" x2="100" y2="48" stroke="rgba(255,107,53,0.6)" stroke-width="1.5"/>
+        <line x1="55" y1="44" x2="55" y2="52" stroke="rgba(255,107,53,0.6)" stroke-width="1.5"/>
+        <line x1="100" y1="44" x2="100" y2="52" stroke="rgba(255,107,53,0.6)" stroke-width="1.5"/>
+        ${label(77,44,'d₁','#FF6B35',9)}
+        <line x1="100" y1="48" x2="130" y2="48" stroke="rgba(0,188,212,0.6)" stroke-width="1.5"/>
+        <line x1="130" y1="44" x2="130" y2="52" stroke="rgba(0,188,212,0.6)" stroke-width="1.5"/>
+        ${label(115,44,'d₂','#00BCD4',9)}
+        ${label(100,116,'✓ EQUILIBRAT!','#FFD700',10)}
+        ${label(100,127,'m·d₁ = 2m·d₂  →  d₁ = 2·d₂','#81C784',8)}
+      </svg>`,
+      svgDetail:`<svg viewBox="0 0 200 130">${G()}
+        ${label(100,13,'FULL DE RESULTATS','#4CAF50',8)}
+        <rect x="10" y="20" width="180" height="102" rx="5" fill="rgba(76,175,80,0.05)" stroke="rgba(76,175,80,0.25)" stroke-width="1"/>
+        ${label(60,36,'m₁ · d₁','#FF6B35',9)}${label(100,36,'=?','#888',9)}${label(140,36,'m₂ · d₂','#00BCD4',9)}
+        <line x1="12" y1="42" x2="188" y2="42" stroke="rgba(76,175,80,0.2)" stroke-width="1"/>
+        ${label(60,58,'10·10=100','#aaa',8)}${label(100,58,'≠','#555',10)}${label(140,58,'20·4=80','#aaa',8)}
+        ${label(100,66,'no equilibrat','#888',7)}
+        ${label(60,82,'10·10=100','#aaa',8)}${label(100,82,'=','#4CAF50',10)}${label(140,82,'20·5=100','#aaa',8)}
+        ${label(100,90,'✓ equilibrat!','#4CAF50',7)}
+        ${label(100,110,'La física sempre funciona!','#81C784',8)}
+      </svg>`
+    }
+  ],
+  problemes:[
+    {
+      nivell:'normal',
+      num:'Problema 1 — On cal posar la massa?',
+      color:'#4CAF50',
+      enunciat:'Tens m₁ = 10 g a d₁ = 15 cm del pivot. On has de posar m₂ = 20 g perquè el balancí s\'equilibri?',
+      dades:'m₁ = 10 g\nd₁ = 15 cm\nm₂ = 20 g\nd₂ = ?',
+      passos:[
+        {label:'Condició equilibri:', val:'F₁ · d₁ = F₂ · d₂'},
+        {label:'Com F=mg:', val:'m₁ · g · d₁ = m₂ · g · d₂  (la g es cancel·la)'},
+        {label:'Simplificant:', val:'m₁ · d₁ = m₂ · d₂'},
+        {label:'Aïllem d₂:', val:'d₂ = (m₁ · d₁) / m₂ = (10 · 15) / 20 = 7,5 cm'},
+      ],
+      resultat:'d₂ = 7,5 cm del pivot (verifica-ho!)'
+    },
+    {
+      nivell:'normal',
+      num:'Problema 2 — El patinador',
+      color:'#FFD700',
+      enunciat:'Un patinador de 60 kg té una energia potencial de 640 J. A quina alçada es troba?',
+      dades:'m = 60 kg\nEp = 640 J\ng = 9,8 m/s²',
+      passos:[
+        {label:'Fórmula:', val:'Ep = m · g · h'},
+        {label:'Aïllem h:', val:'h = Ep / (m · g)'},
+        {label:'Substitució:', val:'h = 640 / (60 · 9,8) = 640 / 588'},
+        {label:'Resultat:', val:'h = 1,09 m'},
+      ],
+      resultat:'h ≈ 1,09 m (poc més d\'1 metre)'
+    },
+    {
+      nivell:'normal',
+      num:'Problema 3 — Pujant escales',
+      color:'#81C784',
+      enunciat:'Una persona de 70 kg puja al 2n pis d\'una finca (cada pis fa 3 m d\'alçada). Quina Ep ha guanyat? Aquesta energia s\'ha creat o s\'ha transformat?',
+      dades:'m = 70 kg\nh = 2 pisos × 3 m = 6 m\ng = 9,8 m/s²',
+      passos:[
+        {label:'Ep:', val:'Ep = 70 · 9,8 · 6 = 4.116 J'},
+        {label:'On ve?', val:'De l\'energia química dels aliments'},
+        {label:'Conclusió:', val:'L\'energia no es crea → es transforma (química → potencial)'},
+      ],
+      resultat:'Ep = 4.116 J — s\'ha transformat des de l\'energia dels aliments!'
+    },
+    {
+      nivell:'normal',
+      num:'Problema 4 — El pres i el tiraxines',
+      color:'#FF6B35',
+      enunciat:'Un pres vol escapar amb un tiraxines que pot acumular 800 J d\'energia elàstica. El pres pesa 60 kg i el mur fa 15 m. Podrà escapar?',
+      dades:'Ep elàstica = 800 J\nm = 60 kg\ng = 9,8 m/s²\nh mur = 15 m',
+      passos:[
+        {label:'Ep per pujar el mur:', val:'Ep = 60 · 9,8 · 15 = 8.820 J'},
+        {label:'Comparem:', val:'800 J  <<  8.820 J necessaris'},
+        {label:'Conclusió:', val:'NO pot escapar! Li falta molta energia.'},
+      ],
+      resultat:'No escapa: necessita 8.820 J però només té 800 J'
+    },
+    {
+      nivell:'adaptat',
+      num:'Problema A — Equilibri senzill',
+      color:'#4CAF50',
+      enunciat:'Al costat esquerre poses 10 g a 10 cm del centre. Al costat dret poses 20 g. A quina distància cal posar-los perquè s\'equilibri?',
+      dades:'m₁ = 10 g, d₁ = 10 cm\nm₂ = 20 g, d₂ = ?',
+      passos:[
+        {label:'Regla equilibri:', val:'m₁ · d₁ = m₂ · d₂'},
+        {label:'Substitució:', val:'10 · 10 = 20 · d₂'},
+        {label:'Calculem:', val:'100 = 20 · d₂  →  d₂ = 100 / 20'},
+        {label:'Resultat:', val:'d₂ = 5 cm'},
+      ],
+      resultat:'d₂ = 5 cm del centre'
+    },
+    {
+      nivell:'adaptat',
+      num:'Problema B — Energia potencial d\'un patinador',
+      color:'#FFD700',
+      enunciat:'Un patinador de 60 kg és a 1 metre d\'alçada. Quina energia potencial té?',
+      dades:'m = 60 kg\nh = 1 m\ng = 9,8 m/s²',
+      passos:[
+        {label:'Fórmula:', val:'Ep = m · g · h'},
+        {label:'Substitució:', val:'Ep = 60 · 9,8 · 1'},
+        {label:'Resultat:', val:'Ep = 588 J'},
+      ],
+      resultat:'Ep = 588 J (joules)'
+    },
+  ]
+},
+// ════════════════════════════════════════════════════════════════════════════
+{
+  id:'carrusel', nom:'🎠 Carrusel', color:'#FF9800', colorLight:'rgba(255,152,0,0.13)',
+  passos:[
+    {
+      titol:'1. Disc i eix vertical',
+      desc:'Disc de cartró de 15 cm de diàmetre. Una palleta fa d\'eix vertical. Ha de quedar ben perpendicular al terra.',
+      tip:'Per verificar la verticalitat de l\'eix: penja-hi un fil amb pes i comprova que sigui paral·lel a l\'eix. Un grau d\'inclinació fa girar malament el carrusel.',
+      formules:[
+        {nom:'RADI r',expr:'Mesura\'l en metres',col:'#FF9800'},
+        {nom:'VELOCITAT',expr:'v = 2·π·r / T',col:'#FFD700'},
+        {nom:'PERÍODE T',expr:'temps d\'1 volta (s)',col:'#FFCC80'},
+      ],
+      svgMain:`<svg viewBox="0 0 200 130">${G()}
+        <ellipse cx="100" cy="75" rx="55" ry="12" fill="rgba(255,152,0,0.2)" stroke="#FF9800" stroke-width="2.5"/>
+        <ellipse cx="100" cy="70" rx="55" ry="12" fill="rgba(255,152,0,0.13)" stroke="#FF9800" stroke-width="2"/>
+        <line x1="100" y1="15" x2="100" y2="115" stroke="#FFD700" stroke-width="3" stroke-linecap="round"/>
+        <rect x="60" y="110" width="80" height="8" rx="3" fill="#7a3a00" stroke="#FF9800" stroke-width="1.5"/>
+        <circle cx="100" cy="110" r="4" fill="rgba(255,152,0,0.33)" stroke="#FF9800" stroke-width="1.5"/>
+        <circle cx="100" cy="70" r="4" fill="none" stroke="#FFD700" stroke-width="2"/>
+        <line x1="100" y1="70" x2="155" y2="70" stroke="rgba(255,152,0,0.4)" stroke-width="1.5"/>
+        ${label(128,64,'r = 7,5 cm','#FFCC80',8)}
+        ${label(100,26,'EIX VERTICAL PALLETA','#FFD700',9)}
+      </svg>`,
+      svgDetail:`<svg viewBox="0 0 200 130">${G()}
+        ${label(100,13,'VELOCITAT LINEAL','#FF9800',8)}
+        <circle cx="100" cy="68" r="40" fill="none" stroke="rgba(255,152,0,0.3)" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <circle cx="100" cy="28" r="6" fill="rgba(255,152,0,0.3)" stroke="#FF9800" stroke-width="2"/>
+        <path d="M 100 28 Q 140 28 140 68" fill="none" stroke="#FF9800" stroke-width="1.5" stroke-dasharray="3,2"/>
+        ${label(138,48,'r','rgba(255,152,0,0.8)',9,'start')}
+        <path d="M 140 68 Q 140 108 100 108" fill="none" stroke="#FFD700" stroke-width="2"/>
+        ${label(148,90,'arc = 2πr','#FFD700',8,'start')}
+        ${label(100,122,'v = 2·π·r / T','#FFD700',10)}
+      </svg>`
+    },
+    {
+      titol:'2. Braços radials',
+      desc:'6 palletes sortint del centre del disc, igualment espaiades a 60°. Enganxa-les per sota i per sobre del disc.',
+      tip:'Per marcar els 60°: dibuixa primer un triangle equilàter inscrit al disc (totes les diagonals passen pel centre). Les sis puntes et donen els 6 punts d\'ancoratge.',
+      formules:[
+        {nom:'ANGLE entre braços',expr:'360° ÷ 6 = 60°',col:'#FF9800'},
+        {nom:'RADI braç',expr:'igual al radi del disc',col:'#FFCC80'},
+        {nom:'Fc (centrípeta)',expr:'Fc = m·v²/r',col:'#FFD700'},
+      ],
+      svgMain:`<svg viewBox="0 0 200 130">${G()}
+        <ellipse cx="100" cy="65" rx="55" ry="12" fill="rgba(255,152,0,0.2)" stroke="#FF9800" stroke-width="2"/>
+        ${[0,60,120,180,240,300].map((deg,i)=>{const r=deg*Math.PI/180;const x2=100+Math.cos(r)*55,y2=65+Math.sin(r)*12;const colors=['#FF6B35','#00BCD4','#FFD700','#4CAF50','#9C27B0','#E91E63'];return `<line x1="100" y1="65" x2="${x2}" y2="${y2}" stroke="${colors[i]}" stroke-width="2.5"/><circle cx="${x2}" cy="${y2}" r="4" fill="rgba(100,100,200,0.3)" stroke="${colors[i]}" stroke-width="1.5"/>`;}).join('')}
+        <circle cx="100" cy="65" r="6" fill="#FF9800"/>
+        <line x1="100" y1="15" x2="100" y2="110" stroke="rgba(255,215,0,0.4)" stroke-width="2" stroke-dasharray="4,2"/>
+        ${label(100,120,'6 BRAÇOS × 60°','#FFCC80',9)}
+      </svg>`,
+      svgDetail:`<svg viewBox="0 0 200 130">${G()}
+        ${label(100,13,'MARCA ELS 60° AMB TRIANGLE','#FF9800',8)}
+        <circle cx="100" cy="68" r="45" fill="none" stroke="rgba(255,152,0,0.3)" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <polygon points="100,23 139,90 61,90" fill="none" stroke="rgba(255,215,0,0.4)" stroke-width="1.5" stroke-dasharray="4,2"/>
+        <circle cx="100" cy="68" r="3" fill="#FF9800"/>
+        ${label(100,18,'60°','#FFD700',8)}
+        ${label(143,94,'60°','#FFD700',8)}
+        ${label(52,94,'60°','#FFD700',8)}
+        ${label(100,120,'triangle equilàter inscrit','#888',7)}
+      </svg>`
+    },
+    {
+      titol:'3. Figures penjants',
+      desc:'Cada figura penja d\'un fil des de la punta del braç. En girar, s\'inclinen cap a fora per la força centrípeta.',
+      tip:'Per observar millor l\'efecte: posa figures de plasticina de masses diferents en braços oposats. Les més pesades s\'inclinaran més!',
+      formules:[
+        {nom:'FORÇA CENTRÍPETA',expr:'Fc = m·v²/r',col:'#FF9800'},
+        {nom:'ENERGIA CIN.',expr:'Ec = ½·m·v²',col:'#FFD700'},
+        {nom:'v (lineal)',expr:'v = 2·π·r / T',col:'#FFCC80'},
+      ],
+      svgMain:`<svg viewBox="0 0 200 130">${G()}${arrow('arrCar','#FF9800')}
+        <ellipse cx="100" cy="50" rx="55" ry="10" fill="rgba(255,152,0,0.13)" stroke="#FF9800" stroke-width="1.5"/>
+        <line x1="100" y1="10" x2="100" y2="110" stroke="rgba(255,215,0,0.4)" stroke-width="2" stroke-dasharray="3,2"/>
+        ${[0,60,120,180,240,300].map((deg,i)=>{const rad=deg*Math.PI/180;const bx=100+Math.cos(rad)*55,by=50+Math.sin(rad)*10;const rx=bx+Math.cos(rad)*12,ry=by+15;const colors=['#FF6B35','#00BCD4','#FFD700','#4CAF50','#9C27B0','#E91E63'];return `<line x1="100" y1="50" x2="${bx}" y2="${by}" stroke="rgba(200,150,50,0.4)" stroke-width="1.5"/><line x1="${bx}" y1="${by}" x2="${rx}" y2="${ry}" stroke="${colors[i]}" stroke-width="1.5"/><rect x="${rx-5}" y="${ry}" width="10" height="12" rx="2" fill="rgba(100,100,200,0.3)" stroke="${colors[i]}" stroke-width="1.5"/>`;}).join('')}
+        <circle cx="100" cy="50" r="5" fill="#FF9800"/>
+        <path d="M 65 35 Q 100 20 135 35" fill="none" stroke="rgba(255,152,0,0.5)" stroke-width="2" marker-end="url(#arrCar)"/>
+        ${label(100,120,'FIGURES S\'INCLINEN — FORÇA CENTRÍPETA','#FFCC80',8)}
+      </svg>`,
+      svgDetail:`<svg viewBox="0 0 200 130">${G()}
+        ${label(100,13,'PER QUÈ S\'INCLINEN?','#FF9800',8)}
+        <circle cx="100" cy="70" r="3" fill="#FF9800"/>
+        <line x1="100" y1="70" x2="150" y2="70" stroke="rgba(255,152,0,0.4)" stroke-width="1.5"/>
+        ${label(128,64,'r','rgba(255,152,0,0.8)',9)}
+        <line x1="150" y1="70" x2="162" y2="88" stroke="#FFD700" stroke-width="2"/>
+        <rect x="157" y="88" width="10" height="12" rx="2" fill="rgba(255,215,0,0.3)" stroke="#FFD700" stroke-width="2"/>
+        <line x1="162" y1="70" x2="162" y2="88" stroke="rgba(255,107,53,0.5)" stroke-width="1.5" stroke-dasharray="3,2"/>
+        ${label(176,80,'Fc','#FF6B35',9,'start')}
+        ${label(168,98,'m·g','#00BCD4',9,'start')}
+        ${label(100,115,'Fc = m·v²/r  →  a + velocitat = + inclinació','#FFCC80',7)}
+      </svg>`
+    },
+    {
+      titol:'4. Caixa suport i mesures',
+      desc:'Caixa de cartró foradada al centre per aguantar l\'eix vertical. Mesura el radi i el període per calcular la velocitat lineal de cada figura.',
+      tip:'Per mesurar T amb precisió: marca un punt al disc, gira i mesura el temps de 10 voltes completes. Divideix per 10.',
+      formules:[
+        {nom:'T (període)',expr:'temps total / 10',col:'#FF9800'},
+        {nom:'v (lineal)',expr:'v = 2·π·r / T',col:'#FFD700'},
+        {nom:'Ec (figura)',expr:'Ec = ½·m·v²',col:'#4CAF50'},
+      ],
+      svgMain:`<svg viewBox="0 0 200 130">${G()}
+        <polygon points="62,78 138,78 138,110 62,110" fill="rgba(255,152,0,0.12)" stroke="#FF9800" stroke-width="2"/>
+        <polygon points="62,78 88,58 164,58 138,78" fill="rgba(255,152,0,0.2)" stroke="#FF9800" stroke-width="2"/>
+        <polygon points="138,78 164,58 164,90 138,110" fill="rgba(255,152,0,0.27)" stroke="#FF9800" stroke-width="2"/>
+        <ellipse cx="110" cy="68" rx="5" ry="3" fill="none" stroke="#FFD700" stroke-width="2"/>
+        <line x1="110" y1="10" x2="110" y2="68" stroke="#FFD700" stroke-width="3" stroke-linecap="round"/>
+        <ellipse cx="110" cy="34" rx="42" ry="9" fill="rgba(255,152,0,0.18)" stroke="#FF9800" stroke-width="1.5"/>
+        ${[0,72,144,216,288].map(deg=>{const r=deg*Math.PI/180;return `<line x1="110" y1="34" x2="${110+Math.cos(r)*42}" y2="${34+Math.sin(r)*9}" stroke="rgba(255,152,0,0.55)" stroke-width="1.5"/>`;}).join('')}
+        <circle cx="110" cy="34" r="4" fill="#FF9800"/>
+        ${label(100,122,'CAIXA CARTRÓ SUPORT','#FFCC80',8)}
+      </svg>`,
+      svgDetail:`<svg viewBox="0 0 200 130">${G()}
+        ${label(100,13,'PROTOCOL MESURA v','#FF9800',8)}
+        <rect x="10" y="20" width="180" height="102" rx="5" fill="rgba(255,152,0,0.05)" stroke="rgba(255,152,0,0.25)" stroke-width="1"/>
+        <circle cx="28" cy="38" r="8" fill="rgba(255,152,0,0.2)" stroke="#FF9800" stroke-width="1.5"/>
+        ${label(28,42,'1','#FF9800',9)}${label(46,40,'Marca un punt al disc','#aaa',8,'start')}
+        <circle cx="28" cy="58" r="8" fill="rgba(255,152,0,0.2)" stroke="#FF9800" stroke-width="1.5"/>
+        ${label(28,62,'2','#FF9800',9)}${label(46,60,'Gira i inicia el cronòmetre','#aaa',8,'start')}
+        <circle cx="28" cy="78" r="8" fill="rgba(255,152,0,0.2)" stroke="#FF9800" stroke-width="1.5"/>
+        ${label(28,82,'3','#FF9800',9)}${label(46,80,'Compta 10 voltes completes','#aaa',8,'start')}
+        <circle cx="28" cy="98" r="8" fill="rgba(255,215,0,0.3)" stroke="#FFD700" stroke-width="1.5"/>
+        ${label(28,102,'4','#FFD700',9)}${label(46,100,'T = temps total / 10','#aaa',8,'start')}
+        <circle cx="28" cy="112" r="8" fill="rgba(76,175,80,0.3)" stroke="#4CAF50" stroke-width="1.5"/>
+        ${label(28,116,'5','#4CAF50',9)}${label(46,114,'v = 2·π·r / T','#4CAF50',8,'start')}
+      </svg>`
+    }
+  ],
+  problemes:[
+    {
+      nivell:'normal',
+      num:'Problema 1 — Velocitat lineal',
+      color:'#FF9800',
+      enunciat:'El disc del carrusel fa 1 volta cada 2 s. El radi és r = 7,5 cm. Calcula la velocitat lineal d\'una figura situada a la punta del braç.',
+      dades:'T = 2 s\nr = 7,5 cm = 0,075 m\nπ = 3,1416',
+      passos:[
+        {label:'Fórmula:', val:'v = 2 · π · r / T'},
+        {label:'Substitució:', val:'v = 2 · 3,1416 · 0,075 / 2'},
+        {label:'Numerador:', val:'2 · 3,1416 · 0,075 = 0,4712'},
+        {label:'v =', val:'0,4712 / 2 = 0,236 m/s'},
+      ],
+      resultat:'v ≈ 0,24 m/s (24 cm per segon)'
+    },
+    {
+      nivell:'normal',
+      num:'Problema 2 — Energia cinètica de la figura',
+      color:'#FFD700',
+      enunciat:'Una figura de plasticina de 50 g gira a v = 0,24 m/s (problema anterior). Calcula la seva energia cinètica.',
+      dades:'m = 50 g = 0,05 kg\nv = 0,24 m/s',
+      passos:[
+        {label:'Fórmula:', val:'Ec = ½ · m · v²'},
+        {label:'v²:', val:'0,24 · 0,24 = 0,0576'},
+        {label:'Ec:', val:'½ · 0,05 · 0,0576 = 0,025 · 0,0576'},
+        {label:'Resultat:', val:'Ec = 0,00144 J ≈ 0,0014 J'},
+      ],
+      resultat:'Ec ≈ 0,0014 J (molt petita, però real!)'
+    },
+    {
+      nivell:'normal',
+      num:'Problema 3 — Avioneta',
+      color:'#4CAF50',
+      enunciat:'Una avioneta de 600 kg vola a 150 km/h. Calcula la seva energia cinètica. Recorda que has de passar km/h a m/s!',
+      dades:'m = 600 kg\nv = 150 km/h  →  cal passar a m/s',
+      passos:[
+        {label:'Canvi unitats:', val:'150 km/h · 1000/3600 = 41,67 m/s'},
+        {label:'Fórmula:', val:'Ec = ½ · m · v²'},
+        {label:'v²:', val:'41,67² = 1.736,4'},
+        {label:'Ec:', val:'½ · 600 · 1736,4 = 520.920 J'},
+      ],
+      resultat:'Ec ≈ 520.920 J (molta energia!)'
+    },
+    {
+      nivell:'normal',
+      num:'Problema 4 — Maurice Greene (atletisme)',
+      color:'#9C27B0',
+      enunciat:'Maurice Greene va batre el rècord dels 100 m amb 9,79 s. Quina velocitat va portar? Si l\'Ec mitja era 3.912,6 J, quina era la seva massa?',
+      dades:'d = 100 m\nt = 9,79 s\nEc = 3.912,6 J',
+      passos:[
+        {label:'Velocitat:', val:'v = d/t = 100 / 9,79 = 10,22 m/s'},
+        {label:'Fórmula Ec:', val:'Ec = ½ · m · v²  →  aïllem m'},
+        {label:'m =', val:'(2 · Ec) / v² = (2 · 3912,6) / 10,22² = 7825,2 / 104,45'},
+        {label:'Resultat:', val:'m ≈ 74,9 kg'},
+      ],
+      resultat:'v = 10,22 m/s  |  m ≈ 74,9 kg'
+    },
+    {
+      nivell:'adaptat',
+      num:'Problema A — Velocitat del carrusel',
+      color:'#FF9800',
+      enunciat:'El carrusel fa 1 volta en 2 s. El radi és 7,5 cm = 0,075 m. Calcula v = 2·π·r / T.',
+      dades:'T = 2 s\nr = 0,075 m\n2·π ≈ 6,28',
+      passos:[
+        {label:'Fórmula:', val:'v = 2 · π · r / T'},
+        {label:'Numerador:', val:'6,28 · 0,075 = 0,471'},
+        {label:'v =', val:'0,471 / 2 = 0,236 m/s'},
+      ],
+      resultat:'v ≈ 0,24 m/s'
+    },
+    {
+      nivell:'adaptat',
+      num:'Problema B — Ec de la figura',
+      color:'#FFD700',
+      enunciat:'Una figura de 50 g (= 0,05 kg) va a 0,24 m/s. Calcula l\'energia cinètica: Ec = ½ · m · v²',
+      dades:'m = 0,05 kg\nv = 0,24 m/s',
+      passos:[
+        {label:'v²:', val:'0,24 · 0,24 = 0,0576'},
+        {label:'½ · m:', val:'½ · 0,05 = 0,025'},
+        {label:'Ec:', val:'0,025 · 0,0576 = 0,00144 J'},
+      ],
+      resultat:'Ec ≈ 0,0014 J'
+    },
+  ]
+}
+];
+
+// ─── ESTAT ────────────────────────────────────────────────────────────────────
+let selAttr = 0, selStep = 0, mode = 'construccio', nivell = 'normal';
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function render() {
+  const attr = attractions[selAttr];
+  const pas  = attr.passos[selStep];
+
+  // Mode toggle
+  document.querySelectorAll('.mode-btn').forEach((b,i)=>{
+    b.classList.toggle('active', (i===0 && mode==='construccio') || (i===1 && mode==='problemes'));
+  });
+
+  // Botons atracció
+  document.getElementById('attr-selector').innerHTML = attractions.map((a,i)=>`
+    <button class="attr-btn" onclick="selAttr=${i};selStep=0;render()"
+      style="border:2px solid ${i===selAttr?a.color:'rgba(150,150,150,0.3)'};
+             background:${i===selAttr?a.colorLight:'transparent'};
+             color:${i===selAttr?a.color:'#666'};
+             font-weight:${i===selAttr?'bold':'normal'}">${a.nom}</button>
+  `).join('');
+
+  // Header
+  const badge = document.getElementById('step-title-badge');
+  document.getElementById('card-header').style.background = attr.colorLight;
+  badge.style.background = attr.color;
+
+  if(mode === 'construccio') {
+    // Indicadors pas
+    document.getElementById('step-selector').style.display = 'flex';
+    document.getElementById('nav').style.display = 'flex';
+    document.getElementById('step-selector').innerHTML = attr.passos.map((_,i)=>`
+      <button class="step-btn" onclick="selStep=${i};render()"
+        style="border:2px solid ${i===selStep?attr.color:'rgba(150,150,150,0.3)'};
+               background:${i===selStep?attr.color:'transparent'};
+               color:${i===selStep?'#000':'#666'}">${i+1}</button>
+    `).join('');
+
+    badge.textContent = pas.titol;
+    document.getElementById('view-construccio').style.display = 'block';
+    document.getElementById('view-problemes').style.display  = 'none';
+
+    document.getElementById('svg-main').innerHTML    = pas.svgMain;
+    document.getElementById('svg-detail').innerHTML  = pas.svgDetail;
+    document.getElementById('step-desc').textContent = pas.desc;
+    document.getElementById('tip-text').textContent  = pas.tip;
+    document.querySelector('.tip-inner').style.borderLeftColor = attr.color;
+    document.getElementById('formulas-grid').innerHTML = pas.formules.map(f=>`
+      <div class="formula-pill" style="border-color:${f.col}33">
+        <span class="formula-name">${f.nom}</span>
+        <span class="formula-expr" style="color:${f.col}">${f.expr}</span>
+      </div>
+    `).join('');
+
+    const isFirst = selStep===0, isLast = selStep===attr.passos.length-1;
+    const bP=document.getElementById('btn-prev'), bN=document.getElementById('btn-next');
+    bP.disabled=isFirst; bP.style.cssText=`border:2px solid ${isFirst?'#333':attr.color};color:${isFirst?'#444':attr.color}`;
+    bN.disabled=isLast;  bN.style.cssText=`border:2px solid ${isLast?'#333':attr.color};color:${isLast?'#444':attr.color};background:${isLast?'transparent':attr.colorLight}`;
+    document.getElementById('step-counter').textContent=`${selStep+1}/${attr.passos.length}`;
+
+  } else {
+    // PROBLEMES
+    document.getElementById('step-selector').style.display = 'none';
+    document.getElementById('nav').style.display = 'none';
+    badge.textContent = '📐 Problemes de física';
+    document.getElementById('view-construccio').style.display = 'none';
+    document.getElementById('view-problemes').style.display  = 'block';
+
+    // Nivell toggle
+    document.querySelectorAll('.nvl-btn').forEach((b,i)=>{
+      b.classList.toggle('active',(i===0&&nivell==='normal')||(i===1&&nivell==='adaptat'));
+      b.style.borderColor = b.classList.contains('active') ? attr.color : 'rgba(150,150,150,0.3)';
+      b.style.color = b.classList.contains('active') ? attr.color : '#555';
+    });
+
+    const probs = attr.problemes.filter(p=>p.nivell===nivell);
+    document.getElementById('problemes-list').innerHTML = probs.map((p,idx)=>`
+      <div class="problema-card" style="border-color:${p.color}33">
+        <div class="prob-header">
+          <span class="prob-num" style="color:${p.color}">${p.num}</span>
+        </div>
+        <div class="prob-enunciat">${p.enunciat}</div>
+        <div class="prob-dades"><b>Dades:</b><br>${p.dades.replace(/\n/g,'<br>')}</div>
+        <button class="sol-toggle" onclick="toggleSol(${idx})" id="sol-btn-${idx}" style="border-color:${p.color}44">
+          👁 Veure solució pas a pas
+        </button>
+        <div class="solucio-box" id="sol-${idx}">
+          ${p.passos.map(s=>`<div class="sol-step"><b>${s.label}</b> ${s.val}</div>`).join('')}
+          <div class="sol-resultat" style="border-color:${p.color}44;color:${p.color}">✓ ${p.resultat}</div>
+        </div>
+      </div>
+    `).join('') || '<p style="color:#555;padding:10px;font-size:12px;">No hi ha problemes per a aquest nivell.</p>';
+  }
+}
+
+function toggleSol(idx) {
+  const box = document.getElementById(`sol-${idx}`);
+  const btn = document.getElementById(`sol-btn-${idx}`);
+  const vis = box.classList.toggle('visible');
+  btn.textContent = vis ? '🙈 Amagar solució' : '👁 Veure solució pas a pas';
+}
+
+function setMode(m) { mode=m; render(); }
+function setNivell(n) { nivell=n; render(); }
+
+function changeStep(delta) {
+  const max = attractions[selAttr].passos.length-1;
+  selStep = Math.max(0, Math.min(max, selStep+delta));
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
